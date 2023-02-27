@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_26_001325) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_27_091545) do
+  create_table "races", force: :cascade do |t|
+    t.text "race_type"
+    t.text "name"
+    t.text "pcs_name"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "teams", force: :cascade do |t|
     t.text "team_type"
     t.text "ds"
