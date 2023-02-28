@@ -15,13 +15,17 @@ class StartlistScraperService
     riders = []
 
     startlist.each do |rider|
-      raw_name = rider.attributes['href']
+      raw_name = rider.children.text
       next unless raw_name
 
-      name = raw_name.value.partition('/').last.tr('-', ' ')
-      riders << name
+      riders << parse_name(raw_name)
     end
 
     riders
+  end
+
+  def parse_name(raw_name)
+    name_as_array = raw_name.split
+    name_as_array.rotate(name_as_array.length - 1).join(' ').downcase
   end
 end
