@@ -1,26 +1,43 @@
+# frozen_string_literal: true
+
 class TeamsController < ApplicationController
   def index
     @team_ds = permitted_params[:team_ds]
 
-    @mens_team = Team.where(ds: @team_ds, team_type: 'mens').or(
+    mens_riders
+    womens_riders
+    mens_races
+    womens_races
+  end
+
+  private
+
+  def permitted_params
+    params.permit(:team_ds)
+  end
+
+  def mens_team
+    @mens_team ||= Team.where(ds: @team_ds, team_type: 'mens').or(
       Team.where(name: @team_ds, team_type: 'mens')
     ).first
-    @womens_team = Team.where(ds: @team_ds, team_type: 'womens').or(
+  end
+
+  def womens_team
+    @womens_team ||= Team.where(ds: @team_ds, team_type: 'womens').or(
       Team.where(name: @team_ds, team_type: 'womens')
     ).first
+  end
 
-    @mens_riders = @mens_team&.riders&.split(', ')&.sort&.map(&:downcase)
-    @womens_riders = @womens_team&.riders&.split(', ')&.sort&.map(&:downcase)
+  def mens_riders
+    @mens_riders ||= mens_team&.riders&.split(', ')&.sort&.map(&:downcase)
+  end
 
-    @mens_races = Race.where(race_type: 'mens').and(
-      Race.where('end_date >= ?', Time.zone.today).or(
-        Race.where('start_date >= ?', Time.zone.today).and(
-          Race.where(end_date: nil)
-        )
-      )
-    ).first(10)
+  def womens_riders
+    @womens_riders ||= womens_team&.riders&.split(', ')&.sort&.map(&:downcase)
+  end
 
-    @womens_races = Race.where(race_type: 'womens').and(
+  def mens_races
+    @mens_races ||= Race.where(race_type: 'mens').and(
       Race.where('end_date >= ?', Time.zone.today).or(
         Race.where('start_date >= ?', Time.zone.today).and(
           Race.where(end_date: nil)
@@ -29,9 +46,13 @@ class TeamsController < ApplicationController
     ).first(10)
   end
 
-  private
-
-  def permitted_params
-    params.permit(:team_ds)
+  def womens_races
+    @womens_races ||= Race.where(race_type: 'womens').and(
+      Race.where('end_date >= ?', Time.zone.today).or(
+        Race.where('start_date >= ?', Time.zone.today).and(
+          Race.where(end_date: nil)
+        )
+      )
+    ).first(10)
   end
 end
