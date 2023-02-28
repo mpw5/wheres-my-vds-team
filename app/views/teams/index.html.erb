@@ -1,47 +1,17 @@
 <%= render 'search' %>
 
-<div class='results'>
-  <% if @mens_team %>
-    <h2><%= @mens_team.name %> - <%= @mens_team.ds %></h2>
-    <% @mens_races.each do |race| %>
-      <% @startlist = StartlistScraperService.new(race.pcs_name).call %>
-      <% @starting_riders = @mens_riders.intersection(@startlist)%>
-      <div class ='race'>
-        <h3><%= race.name %></h3>
-        <div>
-        <% unless @starting_riders.empty? %>
-          <div><%= @starting_riders.map(&:titleize).join(', ') %></div>
-        <% else %>
-          <div>No riders found</div>
-        <% end %>
-        </div>
-      </div>
+<% @teams.each do |team| %>
+  <div class='results'>
+    <h2><%= team.name %> - <%= team.ds %></h2>
+    <% team.team_type == 'mens' ? races = @mens_races : races = @womens_races %>
+    <% races.each do |race| %>
+      <%= render 'race', race: race, team: team %>
     <% end %>
-  <% end %>
-</div>
+  </div>
+<% end %>
 
 <div class='results'>
-  <% if @womens_team %>
-    <h2><%= @womens_team.name %> - <%= @womens_team.ds %></h2>
-    <% @womens_races.each do |race| %>
-      <% @startlist = StartlistScraperService.new(race.pcs_name).call %>
-      <% @starting_riders = @womens_riders.intersection(@startlist)%>
-      <div class ='race'>
-        <h3><%= race.name %></h3>
-        <div>
-        <% unless @starting_riders.empty? %>
-          <div><%= @starting_riders.map(&:titleize).join(', ') %></div>
-        <% else %>
-          <div>No riders found</div>
-        <% end %>
-        </div>
-      </div>
-    <% end %>
-  <% end %>
-</div>
-
-<div class='results'>
-  <% if @team_ds && !(@womens_team || @mens_team) %>
+  <% unless @teams %>
     <h2> No teams found!</h2>
   <% end %>
 </div>

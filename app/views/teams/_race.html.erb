@@ -1,0 +1,15 @@
+<% @startlist = StartlistScraperService.new(race.pcs_name).call %>
+<% @starting_riders = team.riders_array.intersection(@startlist)%>
+
+<div class ='race'>
+  <h3><%= race.name %></h3>
+  <div>
+  <% unless @starting_riders.empty? %>
+    <div>
+      <%= @starting_riders.map(&:titleize).join(', ') %>
+    </div>
+  <% else %>
+    <div>No riders found</div>
+  <% end %>
+  </div>
+</div>
