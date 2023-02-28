@@ -13,3 +13,20 @@
  *= require_tree .
  *= require_self
  */
+html * {
+  font-family: Nunito, sans-serif;
+}
+
+.search{
+  text-align: center;
+}
+
+.results{
+  margin-left: 70px;
+  margin-bottom: 70px;
+}
+
+.race{
+  margin-left: 35px;
+}
+    
