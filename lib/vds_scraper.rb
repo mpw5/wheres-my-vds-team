@@ -1,8 +1,6 @@
 require 'nokogiri'
 require 'open-uri'
 require 'csv'
-# require_relative 'lib/get_info'
-require 'pry'
 
 class VdsScraper
   def self.mens_teams_url

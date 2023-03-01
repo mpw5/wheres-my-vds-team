@@ -2,7 +2,6 @@
 
 require 'open-uri'
 require 'nokogiri'
-require 'pry'
 
 class StartlistScraperService
   def initialize(race)

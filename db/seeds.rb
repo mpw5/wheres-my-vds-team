@@ -1,5 +1,4 @@
 require 'csv'
-require 'pry'
 
 teams = CSV.read(Rails.root.join('db', 'seeds', 'teams.csv'))
 
