@@ -12,6 +12,10 @@ class Race < ApplicationRecord
   }
 
   def startlist
-    StartlistScraperService.new(pcs_name).call
+    if scraped_startlist.nil? || updated_at.before?(6.hours.ago)
+      update!(scraped_startlist: StartlistScraperService.new(pcs_name).call.join(','))
+    end
+
+    scraped_startlist.split(',')
   end
 end
