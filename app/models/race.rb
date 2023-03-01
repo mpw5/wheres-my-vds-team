@@ -10,4 +10,8 @@ class Race < ApplicationRecord
       )
     ).first(10)
   }
+
+  def startlist
+    StartlistScraperService.new(pcs_name).call
+  end
 end

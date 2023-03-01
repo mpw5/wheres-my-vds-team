@@ -1,5 +1,4 @@
-<% @startlist = StartlistScraperService.new(race.pcs_name).call %>
-<% @starting_riders = team.riders_array.intersection(@startlist)%>
+<% @starting_riders = team.riders_array.intersection(race.startlist)%>
 
 <div class ='race'>
   <h3><%= race.name %></h3>
