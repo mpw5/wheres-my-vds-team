@@ -1,8 +1,8 @@
 <div class='search'>
   <h1>Where's my VDS team?</h1>
   <%= form_with model: @team, method: :get do |form| %>
-    <%= form.label :team_ds, "DS name or team name:" %>
+    <%= form.label :team_ds, 'DS name or team name:' %>
     <%= form.text_field :team_ds, value: params[:team_ds] %>
-    <%= form.submit "Search" %>
+    <%= form.submit 'Search', name: nil %>
   <% end %>
 </div>
