@@ -1,14 +1,14 @@
 <% @starting_riders = team.riders_array.intersection(race.startlist)%>
 
 <div class ='race'>
-  <h3><%= race.name %></h3>
+  <h3><%= race.name %><span class='date'>&nbsp;&nbsp;&nbsp;<%= race.dates %></span></h3>
   <div>
-  <% unless @starting_riders.empty? %>
-    <div>
-      <%= @starting_riders.map(&:titleize).join(', ') %>
-    </div>
-  <% else %>
-    <div>No riders found</div>
-  <% end %>
+    <% unless @starting_riders.empty? %>
+      <div>
+        <%= @starting_riders.map(&:titleize).join(', ') %>
+      </div>
+    <% else %>
+      <div><i>No riders found</i></div>
+    <% end %>
   </div>
 </div>

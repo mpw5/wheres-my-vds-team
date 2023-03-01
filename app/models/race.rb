@@ -2,13 +2,7 @@
 
 class Race < ApplicationRecord
   scope :upcoming_races, lambda { |race_type|
-    where(race_type:).and(
-      Race.where('end_date >= ?', Time.zone.today).or(
-        Race.where('start_date >= ?', Time.zone.today).and(
-          Race.where(end_date: nil)
-        )
-      )
-    ).first(10)
+    where(race_type:).and(Race.where('end_date >= ?', Time.zone.today)).first(10)
   }
 
   def startlist
@@ -17,5 +11,13 @@ class Race < ApplicationRecord
     end
 
     scraped_startlist.split(',')
+  end
+
+  def dates
+    if end_date.eql?(start_date)
+      start_date.strftime('%d/%m/%Y')
+    else
+      "#{start_date.strftime('%d/%m/%Y')} - #{end_date.strftime('%d/%m/%Y')}"
+    end
   end
 end
