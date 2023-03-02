@@ -1,7 +1,10 @@
 <% @starting_riders = team.riders_array.intersection(race.startlist)%>
 
 <div class ='race'>
-  <h3><%= race.name %><span class='date'>&nbsp;&nbsp;&nbsp;<%= race.dates %></span></h3>
+  <h3>
+    <a href=<%= "https://www.procyclingstats.com/race/#{race.pcs_name}/2023/startlist" %>><%= race.name %></a>
+    <span class='date'>&nbsp;&nbsp;&nbsp;<%= race.dates %></span>
+  </h3>
   <div>
     <% unless @starting_riders.empty? %>
       <div>
