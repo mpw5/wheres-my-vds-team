@@ -9,7 +9,7 @@ class StartlistScraperService
   end
 
   def call
-    doc = Nokogiri::HTML(URI.open("https://www.procyclingstats.com/race/#{@race}/2023/startlist"))
+    doc = Nokogiri::HTML(URI.open(@race))
     startlist = doc.css('.blue')
     riders = []
 

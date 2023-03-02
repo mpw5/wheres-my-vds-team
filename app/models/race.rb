@@ -7,7 +7,7 @@ class Race < ApplicationRecord
 
   def startlist
     if scraped_startlist.nil? || updated_at.before?(2.hours.ago)
-      update!(scraped_startlist: StartlistScraperService.new(pcs_name).call.join(','))
+      update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
     end
 
     scraped_startlist.split(',')
@@ -19,5 +19,9 @@ class Race < ApplicationRecord
     else
       "#{start_date.strftime('%d/%m/%Y')} - #{end_date.strftime('%d/%m/%Y')}"
     end
+  end
+
+  def pcs_url
+    "https://www.procyclingstats.com/race/#{pcs_name}/2023/startlist"
   end
 end
