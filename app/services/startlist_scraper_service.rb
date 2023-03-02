@@ -25,6 +25,10 @@ class StartlistScraperService
 
   def parse_name(raw_name)
     name_as_array = raw_name.split
-    I18n.transliterate(name_as_array.rotate(name_as_array.length - 1).join(' ').downcase)
+    if raw_name.eql?('LUDWIG Cecilie Uttrup')
+      'cecilie uttrup ludwig'
+    else
+      I18n.transliterate(name_as_array.rotate(name_as_array.length - 1).join(' ').downcase)
+    end
   end
 end
