@@ -25,6 +25,6 @@ class StartlistScraperService
 
   def parse_name(raw_name)
     name_as_array = raw_name.split
-    name_as_array.rotate(name_as_array.length - 1).join(' ').downcase
+    I18n.transliterate(name_as_array.rotate(name_as_array.length - 1).join(' ').downcase)
   end
 end
