@@ -25,10 +25,21 @@ class StartlistScraperService
 
   def parse_name(raw_name)
     name_as_array = raw_name.split
-    if raw_name.eql?('LUDWIG Cecilie Uttrup')
-      'cecilie uttrup ludwig'
-    else
-      I18n.transliterate(name_as_array.rotate(name_as_array.length - 1).join(' ').downcase)
-    end
+    rotated_name = if raw_name.in?(riders_with_middle_names)
+                     name_as_array.rotate(name_as_array.length - 2)
+                   else
+                     name_as_array.rotate(name_as_array.length - 1)
+                   end
+
+    I18n.transliterate(rotated_name.join(' ').downcase)
+  end
+
+  def riders_with_middle_names
+    ['LUDWIG Cecilie Uttrup',
+     'MOLANO Juan Sebastian',
+     'SÁNCHEZ Luis León',
+     'ROJAS José Joaquín',
+     'LÓPEZ Miguel Ángel',
+     'MARTÍNEZ Daniel Felipe']
   end
 end
