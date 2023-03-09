@@ -11,6 +11,16 @@ require 'rspec/rails'
 require_relative 'support/factory_bot'
 require_relative 'support/chrome'
 # Add additional requires below this line. Rails is not loaded until this point!
+require 'simplecov'
+
+SimpleCov.configure do
+  add_filter '_spec.rb'
+  add_filter 'spec/'
+  add_filter 'config/'
+  add_filter 'db/seeds'
+end
+
+SimpleCov.start
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
