@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe StartlistScraperService do
-  subject(:scraper) { described_class.new('https://www.test.com/race/milano-sanremo/2023/startlist') }
+  subject(:scraper) { described_class.new(fake_url) }
+
+  let(:fake_url) { 'www.test.com/race/milano-sanremo/2023/startlist' }
 
   let(:fake_html) do
     Nokogiri::HTML('
@@ -24,7 +26,7 @@ RSpec.describe StartlistScraperService do
   end
 
   before do
-    allow(URI).to receive(:open).with('https://www.test.com/race/milano-sanremo/2023/startlist')
+    allow(URI).to receive(:open).with("https://#{fake_url}")
     allow(Nokogiri::HTML::Document).to receive(:parse).and_return(fake_html)
   end
 

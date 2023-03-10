@@ -22,6 +22,6 @@ class Race < ApplicationRecord
   end
 
   def pcs_url
-    "https://www.procyclingstats.com/race/#{pcs_name}/#{Time.zone.today.year}/startlist"
+    "www.procyclingstats.com/race/#{pcs_name}/#{Time.zone.today.year}/startlist"
   end
 end
