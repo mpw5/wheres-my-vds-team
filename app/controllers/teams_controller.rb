@@ -3,7 +3,7 @@
 class TeamsController < ApplicationController
   def index
     @team_ds = permitted_params[:team_ds]&.strip
-    @teams = Team.where('lower(ds) = ?', @team_ds&.downcase).or(Team.where('lower(name) = ?', @team_ds&.downcase))
+    @teams = Team.teams_for @team_ds
   end
 
   private
