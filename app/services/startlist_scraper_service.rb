@@ -35,11 +35,15 @@ class StartlistScraperService
   end
 
   def riders_with_middle_names
-    ['LUDWIG Cecilie Uttrup',
-     'MOLANO Juan Sebastian',
-     'SÁNCHEZ Luis León',
-     'ROJAS José Joaquín',
-     'LÓPEZ Miguel Ángel',
-     'MARTÍNEZ Daniel Felipe']
+    [
+      'LUDWIG Cecilie Uttrup',
+      'MOLANO Juan Sebastian',
+      'SÁNCHEZ Luis León',
+      'ROJAS José Joaquín',
+      'LÓPEZ Miguel Ángel',
+      'MARTÍNEZ Daniel Felipe',
+      'JOHANNESSEN Tobias Halland',
+      'JOHANNESSEN Anders Halland'
+    ]
   end
 end
