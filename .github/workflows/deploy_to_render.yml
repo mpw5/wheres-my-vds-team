@@ -9,4 +9,4 @@ jobs:
       - name: Deploy to Render
         uses: wei/curl@master
         with:
-          args: https://api.render.com/deploy/${{ secrets.render_service_id }}?key=${{ secrets.render_api_key }}
+          args: https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}\?key\=${{ secrets.RENDER_API_KEY }}
