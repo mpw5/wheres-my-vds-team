@@ -1,7 +1,5 @@
-name: "Pre-deployment checks"
+name: "Tests"
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 jobs:
@@ -34,13 +32,3 @@ jobs:
         run: bundle exec brakeman -q -w2
       - name: Lint Ruby files
         run: bundle exec rubocop --parallel
-
-  release:
-    runs-on: ubuntu-latest
-    needs: [test, lint]
-    steps:
-      - name: Deploy to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.render_service_id }}
-          api-key: ${{ secrets.render_api_key }}
