@@ -6,9 +6,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - shell: bash
-        env:
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: |
-          curl https://api.render.com/deploy/${RENDER_SERVICE_ID}?key=${RENDER_API_KEY}
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.render_service_id }}
+          api-key: ${{ secrets.render_api_key }}
