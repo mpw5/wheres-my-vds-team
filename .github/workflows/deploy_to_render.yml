@@ -1,0 +1,14 @@
+name: "Deploy to render"
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    steps:
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.render_service_id }}
+          api-key: ${{ secrets.render_api_key }}
