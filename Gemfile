@@ -7,7 +7,7 @@ gem 'bootsnap', require: false
 gem 'importmap-rails'
 gem 'jbuilder'
 gem 'puma', '~> 5.0'
-gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
+gem 'rails', '~> 7.0.4'
 gem 'redis', '~> 4.0'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
