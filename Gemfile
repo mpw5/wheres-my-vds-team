@@ -8,7 +8,7 @@ gem 'importmap-rails'
 gem 'jbuilder'
 gem 'puma', '~> 5.0'
 gem 'rails', '~> 7.0.4'
-gem 'redis', '~> 4.0'
+gem 'redis', '~> 5.0'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
 gem 'sqlite3', '~> 1.4'
