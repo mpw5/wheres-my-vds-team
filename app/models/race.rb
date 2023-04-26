@@ -2,7 +2,9 @@
 
 class Race < ApplicationRecord
   scope :upcoming_races, lambda { |race_type|
-    where(race_type:).and(Race.where('end_date >= ?', Time.zone.today)).first(10)
+    Race.order(end_date: :asc).where(race_type:).and(
+      Race.order(end_date: :asc).where('end_date >= ?', Time.zone.today)
+    ).first(10)
   }
 
   def startlist
