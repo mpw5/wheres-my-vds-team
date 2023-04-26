@@ -11,11 +11,11 @@ RSpec.describe Race do
   describe 'upcoming_races' do
     let(:start_date) { Time.zone.today }
     let(:end_date) { Time.zone.today }
-    let!(:race2) { create(:race, start_date: Time.zone.today + 1, end_date: Time.zone.today + 7) }
-    let!(:race3) { create(:race, start_date: Time.zone.today - 1, end_date: Time.zone.today - 1) }
+    let!(:another_race) { create(:race, start_date: Time.zone.today + 1, end_date: Time.zone.today + 7) }
+    let!(:yet_another_race) { create(:race, start_date: Time.zone.today - 1, end_date: Time.zone.today - 1) }
 
-    it { expect(described_class.upcoming_races('mens')).to eq [race, race2] }
-    it { expect(described_class.upcoming_races('mens')).not_to include race3 }
+    it { expect(described_class.upcoming_races('mens')).to eq [race, another_race] }
+    it { expect(described_class.upcoming_races('mens')).not_to include yet_another_race }
   end
 
   describe 'startlist' do
