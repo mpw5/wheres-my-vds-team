@@ -4,23 +4,33 @@ require 'open-uri'
 require 'nokogiri'
 
 class StartlistScraperService
+  attr_reader :riders
+
   def initialize(race)
     @race = race
+    @riders = []
   end
 
   def call
     doc = Nokogiri::HTML(URI.open("https://#{@race}"))
-    startlist = doc.css('.blue')
-    riders = []
+    startlist = doc.css('.startlist_v4')
+    return [] if startlist.empty?
 
-    startlist.each do |rider|
-      raw_name = rider.children.text
-      next unless raw_name
-
-      riders << parse_name(raw_name)
+    startlist.first.children.each do |team|
+      team_riders = team.css('.ridersCont')
+      add_riders_for(team_riders)
     end
 
     riders
+  end
+
+  def add_riders_for(team)
+    team.first.children.children.children.children.each do |rider|
+      raw_name = rider.text
+      next unless raw_name.length > 3
+
+      riders << parse_name(raw_name)
+    end
   end
 
   def parse_name(raw_name)

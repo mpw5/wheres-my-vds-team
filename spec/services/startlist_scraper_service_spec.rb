@@ -8,21 +8,7 @@ RSpec.describe StartlistScraperService do
   let(:fake_url) { 'www.test.com/race/milano-sanremo/2023/startlist' }
 
   let(:fake_html) do
-    Nokogiri::HTML('
-      <ul>
-        <li>
-          <span class="flag nl"></span>
-          <a class="blue" href="rider/mathieu-van-der-poel">
-            <span class="">VAN DER POEL Mathieu</span>
-          </a>
-        </li>
-        <li>
-          <span class="flag be"></span>
-          <a class="blue" href="rider/jasper-philipsen">
-            <span class="">PHILIPSEN Jasper</span>
-          </a>
-        </li>
-      </ul>')
+    Nokogiri::HTML('<ul class="startlist_v4"><li><div class="ridersCont"><ul><li class=""><a href="rider/mathieu-van-der-poel"><span class="">VAN DER POEL Mathieu</span></a></li></ul></div></li><li><div class="ridersCont"><ul><li class><a href="rider/jasper-philipsen"><span class="">PHILIPSEN Jasper</span></a></li></ul></div></li></ul>')
   end
 
   before do
