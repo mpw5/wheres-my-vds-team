@@ -65,8 +65,7 @@ module Vds
             rider_name = rider.children[7].children.first.children.text
             team_array << rider_name unless rider_name.empty?
           end
-
-          csv << [type, ds, team_name, team_array]
+          csv << [type, ds, team_name, team_array.join(', ')].reject(&:empty?)
         end
       end
     end
