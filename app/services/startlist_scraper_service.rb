@@ -44,6 +44,7 @@ class StartlistScraperService
     I18n.transliterate(rotated_name.join(' ').downcase)
   end
 
+  # rubocop:disable Metrics/MethodLength
   def riders_with_middle_names
     [
       'LUDWIG Cecilie Uttrup',
@@ -53,7 +54,9 @@ class StartlistScraperService
       'LÓPEZ Miguel Ángel',
       'MARTÍNEZ Daniel Felipe',
       'JOHANNESSEN Tobias Halland',
-      'JOHANNESSEN Anders Halland'
+      'JOHANNESSEN Anders Halland',
+      'LÓPEZ Juan Pedro'
     ]
   end
+  # rubocop:enable Metrics/MethodLength
 end
