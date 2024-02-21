@@ -24,7 +24,8 @@ After teams have been revealed:
     * `Enric Mas Nicolau` -> `Enric Mas`
     * `Sergio Andres Higuita` -> `Sergio Higuita`
     * `Tobias Svendsen Foss` -> `Tobias Foss`
-    * `Carlos Verona Quintanilla` -> `Carlos Verona Quintanilla`
+    * `Carlos Verona Quintanilla` -> `Carlos Verona`
+    * `Alexy Faure-Prost` -> `Alexy Faure Prost`
     * `Coryn Labecki (Rivera)` -> `Coryn Labecki`
     * `Kata Blanka Vas` -> `Blanka Vas`
     * `Maaike van der Duin` -> `Maike van der Duin`
