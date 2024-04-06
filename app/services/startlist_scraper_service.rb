@@ -55,7 +55,8 @@ class StartlistScraperService
       'MARTÍNEZ Daniel Felipe',
       'JOHANNESSEN Tobias Halland',
       'JOHANNESSEN Anders Halland',
-      'LÓPEZ Juan Pedro'
+      'LÓPEZ Juan Pedro',
+      'LECERF William Junior'
     ]
   end
   # rubocop:enable Metrics/MethodLength
