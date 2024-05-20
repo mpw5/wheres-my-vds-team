@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
+        uses: johnbeynon/render-deploy-action@v0.0.9
         with:
           service-id: ${{ secrets.render_service_id }}
           api-key: ${{ secrets.render_api_key }}
