@@ -1,6 +1,6 @@
 <div class='search'>
   <h1>Where's my <a href="https://www.podiumcafe.com">Podium Cafe</a> <a href="https://pdcvds.com">VDS</a> team?</h1>
-  <%= form_with model: @team, method: :get do |form| %>
+  <%= form_with method: :get do |form| %>
     <%= form.label :team_ds, 'DS name or team name:' %>
     <%= form.text_field :team_ds, value: params[:team_ds] %>
     <%= form.submit 'Search', name: nil %>

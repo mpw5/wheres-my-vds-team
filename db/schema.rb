@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_03_01_104227) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_21_143442) do
   create_table "races", force: :cascade do |t|
     t.text "race_type"
     t.text "name"
@@ -30,5 +30,4 @@ ActiveRecord::Schema[7.1].define(version: 2023_03_01_104227) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-
 end
