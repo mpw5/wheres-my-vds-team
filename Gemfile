@@ -4,10 +4,11 @@ git_source(:github) { |repo| 'https://github.com/#{repo}.git' }
 ruby '3.3.1'
 
 gem 'bootsnap', require: false
+gem 'csv'
 gem 'importmap-rails'
 gem 'jbuilder'
 gem 'puma', '~> 6.4'
-gem 'rails', '~> 7.2.1'
+gem 'rails', '~> 8.0.0'
 gem 'redis', '~> 5.3'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
