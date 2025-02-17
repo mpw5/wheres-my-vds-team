@@ -7,7 +7,7 @@ gem 'bootsnap', require: false
 gem 'csv'
 gem 'importmap-rails'
 gem 'jbuilder'
-gem 'puma', '~> 6.5'
+gem 'puma', '~> 6.6'
 gem 'rails', '~> 8.0.0'
 gem 'redis', '~> 5.3'
 gem 'simplecov', require: false
