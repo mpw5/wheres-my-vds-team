@@ -12,7 +12,7 @@ RSpec.describe TeamsController do
 
   context 'with no team_ds param' do
     it { expect(response).to have_http_status(:ok) }
-    it { expect(response.body).to include "<h1>Where's my <a href=\"https://www.podiumcafe.com\">Podium Cafe</a>" }
+    it { expect(response.body).to include "<h1>Where's my <a href=\"https://www.reddit.com/r/PodiumCafe2/\">Podium Cafe v2</a>" }
     it { expect(response.body).not_to include '<div class="results">' }
   end
 
@@ -20,7 +20,7 @@ RSpec.describe TeamsController do
     let(:params) { { team_ds: team.name } }
 
     it { expect(response).to have_http_status(:ok) }
-    it { expect(response.body).to include "<h1>Where's my <a href=\"https://www.podiumcafe.com\">Podium Cafe</a>" }
+    it { expect(response.body).to include "<h1>Where's my <a href=\"https://www.reddit.com/r/PodiumCafe2/\">Podium Cafe v2</a>" }
     it { expect(response.body).to include "<div class='results'>" }
   end
 end
