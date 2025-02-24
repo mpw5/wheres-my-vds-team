@@ -12,7 +12,7 @@ gem 'rails', '~> 8.0.0'
 gem 'redis', '~> 5.3'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
-gem 'sqlite3', '~> 2.5'
+gem 'sqlite3', '~> 2.6'
 gem 'stimulus-rails'
 gem 'turbo-rails'
 gem 'tzinfo-data', platforms: %i[ mingw mswin x64_mingw jruby ]
