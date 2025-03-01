@@ -56,7 +56,15 @@ class StartlistScraperService
       'JOHANNESSEN Tobias Halland',
       'JOHANNESSEN Anders Halland',
       'LÓPEZ Juan Pedro',
-      'LECERF William Junior'
+      'TEUTENBERG Tim Torn',
+      'HONORÉ Mikkel Frølich',
+      'PEDERSEN Rasmus Søjberg',
+      'FAURA José Luis',
+      'HERREÑO Martin Santiago',
+      'KAJAMINI Florian Samuel',
+      'MARTINEZ Guillermo Juan',
+      'PEÑUELA Francisco Joel',
+      'CEPEDA Jefferson Alveiro'
     ]
   end
   # rubocop:enable Metrics/MethodLength
