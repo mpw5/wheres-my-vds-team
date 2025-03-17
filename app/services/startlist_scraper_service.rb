@@ -64,7 +64,8 @@ class StartlistScraperService
       'KAJAMINI Florian Samuel',
       'MARTINEZ Guillermo Juan',
       'PEÑUELA Francisco Joel',
-      'CEPEDA Jefferson Alveiro'
+      'CEPEDA Jefferson Alveiro',
+      'HAGENES Per Strand'
     ]
   end
   # rubocop:enable Metrics/MethodLength
