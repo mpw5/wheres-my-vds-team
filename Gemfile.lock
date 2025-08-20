@@ -362,7 +362,7 @@ DEPENDENCIES
   jbuilder
   pry
   puma (~> 6.6)
-  rails (~> 8.0.0)
+  rails (~> 8.0.2)
   redis (~> 5.4)
   rspec-rails
   rubocop
