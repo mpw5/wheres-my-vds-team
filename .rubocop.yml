@@ -18,7 +18,6 @@ AllCops:
     - 'bin/**/*'
     - 'config/**/*'
     - 'script/**/*'
-    - 'lib/**/*'
     - 'features/**/*'
     - 'public/**/*'
     - 'tmp/**/*'

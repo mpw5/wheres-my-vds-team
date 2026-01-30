@@ -5,6 +5,7 @@ ruby '4.0.1'
 
 gem 'bootsnap', require: false
 gem 'csv'
+gem 'graphql-client'
 gem 'importmap-rails'
 gem 'jbuilder'
 gem 'puma', '~> 7.2'
