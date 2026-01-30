@@ -1,119 +1,74 @@
-require 'nokogiri'
-require 'open-uri'
+# frozen_string_literal: true
+
 require 'csv'
 
 module Vds
   class Scraper
-    def self.year
-      Time.zone.today.year
-    end
-
-    def self.mens_teams_url
-      "https://pdcvds.com/teams.php?mw=1&y=#{year}"
-    end
-
-    def self.womens_teams_url
-      "https://pdcvds.com/teams.php?mw=0&y=#{year}"
-    end
-
-    def self.mens_races_url
-      "https://pdcvds.com/cal.php?mw=1&y=#{year}"
-    end
-
-    def self.womens_races_url
-      "https://pdcvds.com/cal.php?mw=0&y=#{year}"
-    end
-
-    def self.connect_to_page(url)
-      Nokogiri::HTML(URI.open(url))
-    end
+    def self.year = Time.zone.today.year
 
     def self.teams
-      CSV.open('lib/data/teams.csv', 'wb', force_quotes: false) do |csv|
-        mens_teams = connect_to_page(mens_teams_url).at('table')
-
-        mens_teams.search('tr').each do |team|
-          type = 'mens'
-          ds = team.css('td')[1]&.text
-          team_name = team.css('td')[2]&.text
-          team_link = team.css('td')[2]&.children&.first&.attributes&.dig('href')&.value
-          puts "#{team_name} - #{ds}"
-
-          next if team_link.nil?
-          team_array = []
-          team_list = connect_to_page("#{mens_teams_url}#{team_link}").at('table')
-          team_list.search('tr').each do |rider|
-            rider_name = rider.children[9].children.first.children.text
-            team_array << rider_name unless rider_name.empty?
-          end
-          csv << [type, ds, team_name, team_array.join(', ')].reject(&:empty?)
-        end
-
-        womens_teams = connect_to_page(womens_teams_url).at('table')
-
-        womens_teams.search('tr').each do |team|
-          type = 'womens'
-          ds = team.css('td')[1]&.text
-          team_name = team.css('td')[2]&.text
-          team_link = team.css('td')[2]&.children&.first&.attributes&.dig('href')&.value
-          puts "#{team_name} - #{ds}"
-
-          next if team_link.nil?
-          team_array = []
-          team_list = connect_to_page("#{womens_teams_url}#{team_link}").at('table')
-          team_list.search('tr').each do |rider|
-            rider_name = rider.children[7].children.first.children.text
-            team_array << rider_name unless rider_name.empty?
-          end
-          csv << [type, ds, team_name, team_array.join(', ')].reject(&:empty?)
-        end
-      end
+      Vds::Scraper.populate_teams_csv(gender: 'MALE')
+      Vds::Scraper.populate_teams_csv(gender: 'FEMALE')
     end
 
     def self.races
-      CSV.open('lib/data/races.csv', 'wb', force_quotes: false) do |csv|
-        mens_races = connect_to_page(mens_races_url).at('table')
+      Vds::Scraper.populate_races_csv(gender: 'MALE')
+      Vds::Scraper.populate_races_csv(gender: 'FEMALE')
+    end
 
-        mens_races.search('tr').each do |race|
-          type = 'mens'
-          raw_name = race.css('td')[4]&.text
-          name = raw_name&.slice(0..(raw_name&.index(' (')))&.strip
-          day = race.css('td')[1]&.text
-          month = race.css('td')[0]&.text
+    def self.riders
+      Vds::Scraper.populate_riders_csv(gender: 'MALE')
+      Vds::Scraper.populate_riders_csv(gender: 'FEMALE')
+    end
 
-          if month&.empty?
-            month = @current_month
-          else
-            @current_month = month
-          end
+    def self.run_query(query, gender)
+      client = Vds::GraphQlClient::Client
+      response = client.query(query, variables: { year: year, gender: gender })
+      raise response.errors[:data].to_s if response.errors&.any?
 
-          year = Time.zone.today.year
-          length = race.css('td')[5]&.text
+      response
+    end
 
-          csv << [type, name, name&.parameterize, day, month, year, length]
-        end
+    def self.populate_teams_csv(gender:)
+      teams = run_query(Vds::Queries::TEAMS, gender).data.teams.nodes
 
-        womens_races = connect_to_page(womens_races_url).at('table')
+      CSV.open('lib/data/teams.csv', 'a') do |csv|
+        teams.each do |team|
+          riders = team.riders.nodes.map { |rider| rider[:displayName] }
+          team = team.to_h
 
-        womens_races.search('tr').each do |race|
-          type = 'womens'
-          raw_name = race.css('td')[4]&.text
-          name = raw_name&.slice(0..(raw_name&.index(' (')))&.strip
-          day = race.css('td')[1]&.text
-          month = race.css('td')[0]&.text
-
-          if month&.empty?
-            month = @current_month
-          else
-            @current_month = month
-          end
-
-          year = Time.zone.today.year
-          length = race.css('td')[5]&.text
-
-          csv << [type, name, name&.parameterize, day, month, year, length]
+          csv << [gender.downcase, team.dig('manager', 'displayName'), team['name'], riders]
         end
       end
     end
+
+    def self.populate_races_csv(gender:)
+      races = run_query(Vds::Queries::RACES, gender).data.races.nodes
+
+      CSV.open('lib/data/races.csv', 'a') do |csv|
+        races.each do |race|
+          race = race.to_h
+          name = race.dig('race', 'name')
+
+          csv << [gender.downcase, name.parameterize, race['startDate'], race['stageCount']]
+        end
+      end
+    end
+
+    # rubocop:disable Metrics/AbcSize
+    def self.populate_riders_csv(gender:)
+      riders = run_query(Vds::Queries::RIDERS, gender).data.riders.nodes
+
+      CSV.open('lib/data/riders.csv', 'a') do |csv|
+        riders.each do |rider|
+          rider = rider.to_h
+          rider_season = rider['season'].to_h
+
+          csv << [gender.downcase, rider['displayName'], rider['nationality'], rider_season['team'],
+                  rider_season['cost'], rider_season['previousYearCost'], rider_season['previousYearScore']]
+        end
+      end
+    end
+    # rubocop:enable Metrics/AbcSize
   end
 end
