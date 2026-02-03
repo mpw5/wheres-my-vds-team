@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :race do
-    race_type { 'mens' }
+    race_type { 'male' }
     name { Faker::Sports::Football.competition }
     pcs_name { name.downcase.parameterize }
     start_date { Time.zone.today }
