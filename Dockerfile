@@ -37,9 +37,8 @@ RUN bundle install
 # Copy the rest of the application
 COPY . .
 
-# Precompile assets with dummy secret key
-RUN SECRET_KEY_BASE=dummy RAILS_ENV=production bundle exec rake assets:precompile && \
-    bundle exec rake assets:clean
+# Precompile assets with dummy secret key and skip database initialization
+RUN SECRET_KEY_BASE=dummy RAILS_GROUPS=assets bundle exec rake assets:precompile assets:clean
 
 # Expose port
 EXPOSE 3000
