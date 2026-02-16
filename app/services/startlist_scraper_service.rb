@@ -12,7 +12,17 @@ class StartlistScraperService
   end
 
   def call
-    doc = Nokogiri::HTML(URI.open("https://#{@race}"))
+    begin
+      url = "https://#{@race}"
+      options = {
+        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+      doc = Nokogiri::HTML(URI.open(url, options))
+    rescue OpenURI::HTTPError => e
+      Rails.logger.error "Failed to fetch: #{e.message}"
+      Rails.logger.error "Response: #{e.io.read}" if e.io
+      return []
+    end
     startlist = doc.css('.startlist_v4')
     return [] if startlist.empty?
 
@@ -44,7 +54,6 @@ class StartlistScraperService
     I18n.transliterate(rotated_name.join(' ').downcase)
   end
 
-  # rubocop:disable Metrics/MethodLength
   def riders_with_middle_names
     [
       'LUDWIG Cecilie Uttrup',
@@ -69,5 +78,4 @@ class StartlistScraperService
       'ANDRESEN Tobias Lund'
     ]
   end
-  # rubocop:enable Metrics/MethodLength
 end
