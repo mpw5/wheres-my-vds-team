@@ -26,6 +26,10 @@ RUN apt-get update -qq && \
 # Set working directory
 WORKDIR /app
 
+# Set production environment
+ENV RAILS_ENV=production
+ENV RACK_ENV=production
+
 # Copy Gemfile and install dependencies
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
