@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :team do
-    team_type { 'mens' }
+    team_type { 'male' }
     name { Faker::Sports::Football.team }
     ds { Faker::Name.name }
     riders { "#{Faker::Name.name}, #{Faker::Name.name}" }

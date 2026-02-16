@@ -14,8 +14,8 @@ RSpec.describe Race do
     let!(:another_race) { create(:race, start_date: Time.zone.today + 1, end_date: Time.zone.today + 7) }
     let!(:yet_another_race) { create(:race, start_date: Time.zone.today - 1, end_date: Time.zone.today - 1) }
 
-    it { expect(described_class.upcoming_races('mens')).to eq [race, another_race] }
-    it { expect(described_class.upcoming_races('mens')).not_to include yet_another_race }
+    it { expect(described_class.upcoming_races('male')).to eq [race, another_race] }
+    it { expect(described_class.upcoming_races('male')).not_to include yet_another_race }
   end
 
   describe 'startlist' do
