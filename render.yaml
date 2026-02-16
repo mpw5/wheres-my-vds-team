@@ -5,6 +5,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     preDeployCommand: "bundle exec rake db:migrate db:seed"
+    disk:
+      name: wheres-my-vds-team-data
+      mountPath: /app/db
+      sizeGB: 1
     envVars:
       - key: RAILS_ENV
         value: production
@@ -12,14 +16,4 @@ services:
         value: true
       - key: RAILS_LOG_TO_STDOUT
         value: true
-      - key: DATABASE_URL
-        fromDatabase:
-          name: wheres-my-vds-team-db
-          property: connectionString
-    plan: starter
-
-databases:
-  - name: wheres-my-vds-team-db
-    databaseName: wheres_my_vds_team_production
-    user: wheres_my_vds_team
     plan: starter
