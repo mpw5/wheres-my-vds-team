@@ -34,6 +34,10 @@ class StartlistScraperService
     options.add_argument('--window-size=1400,900')
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+
+    # Use chromium binary if available (for Docker), otherwise default to chrome
+    options.binary = '/usr/bin/chromium' if File.exist?('/usr/bin/chromium')
+
     driver = Selenium::WebDriver.for(:chrome, options: options)
     driver.get(url)
     # sleep 3

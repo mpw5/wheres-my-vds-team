@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: wheres-my-vds-team
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    preDeployCommand: "bundle exec rake db:migrate db:seed"
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_SERVE_STATIC_FILES
+        value: true
+      - key: RAILS_LOG_TO_STDOUT
+        value: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wheres-my-vds-team-db
+          property: connectionString
+      - key: SECRET_KEY_BASE
+        generateValue: true
+    plan: starter
+
+databases:
+  - name: wheres-my-vds-team-db
+    databaseName: wheres_my_vds_team_production
+    user: wheres_my_vds_team
+    plan: starter
