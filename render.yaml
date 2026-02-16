@@ -16,8 +16,6 @@ services:
         fromDatabase:
           name: wheres-my-vds-team-db
           property: connectionString
-      - key: SECRET_KEY_BASE
-        generateValue: true
     plan: starter
 
 databases:
