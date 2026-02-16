@@ -12,17 +12,7 @@ class StartlistScraperService
   end
 
   def call
-    begin
-      url = "https://#{@race}"
-      options = {
-        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
-      doc = Nokogiri::HTML(URI.open(url, options))
-    rescue OpenURI::HTTPError => e
-      Rails.logger.error "Failed to fetch: #{e.message}"
-      Rails.logger.error "Response: #{e.io.read}" if e.io
-      return []
-    end
+    doc = fetch_race_page
     startlist = doc.css('.startlist_v4')
     return [] if startlist.empty?
 
@@ -32,6 +22,25 @@ class StartlistScraperService
     end
 
     riders
+  end
+
+  def fetch_race_page
+    url = "https://#{@race}"
+
+    options = Selenium::WebDriver::Chrome::Options.new
+    options.add_argument('--headless=new')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--window-size=1400,900')
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    driver = Selenium::WebDriver.for(:chrome, options: options)
+    driver.get(url)
+    # sleep 3
+
+    html = driver.page_source
+    driver.quit
+    Nokogiri::HTML(html)
   end
 
   def add_riders_for(team)
