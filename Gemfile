@@ -8,9 +8,11 @@ gem 'csv'
 gem 'graphql-client'
 gem 'importmap-rails'
 gem 'jbuilder'
+gem 'nokogiri'
 gem 'puma', '~> 7.2'
 gem 'rails', '~> 8.1.1'
 gem 'redis', '~> 5.4'
+gem 'selenium-webdriver'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
 gem 'sqlite3', '~> 2.9'
@@ -40,6 +42,4 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'selenium-webdriver'
-  gem 'webdrivers'
 end
