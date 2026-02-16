@@ -21,36 +21,50 @@ module Vds
       Vds::Scraper.populate_riders_csv(gender: 'FEMALE')
     end
 
-    def self.run_query(query, gender)
+    def self.run_query(query, gender, after: nil)
       client = Vds::GraphQlClient::Client
-      response = client.query(query, variables: { year: year, gender: gender })
-      raise response.errors[:data].to_s if response.errors&.any?
+      variables = { year:, gender: }
+      variables[:after] = after if after
+      response = client.query(query, variables:)
+      raise response.errors.to_s if response.errors&.any?
 
       response
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def self.populate_teams_csv(gender:)
-      teams = run_query(Vds::Queries::TEAMS, gender).data.teams.nodes
+      after = nil
 
-      CSV.open('lib/data/teams.csv', 'a') do |csv|
-        teams.each do |team|
-          riders = team.riders.nodes.map { |rider| rider[:displayName] }
-          team = team.to_h
+      loop do
+        response = run_query(Vds::Queries::TEAMS, gender, after: after)
+        teams_data = response.data.teams
+        teams = teams_data.nodes
 
-          csv << [gender.downcase, team.dig('manager', 'displayName'), team['name'], riders]
+        CSV.open(Rails.root.join('lib/data/teams.csv'), 'a') do |csv|
+          teams.each do |team|
+            team = team.to_h
+            next unless team['locked']
+
+            roster = team['riders']['nodes'].map { |rider| rider['rider']['displayName'] }.join(',')
+            csv << [gender.downcase, team.dig('manager', 'displayName'), team['name'], roster]
+          end
         end
+        break unless teams_data.page_info.has_next_page
+
+        after = teams_data.page_info.end_cursor
       end
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def self.populate_races_csv(gender:)
       races = run_query(Vds::Queries::RACES, gender).data.races.nodes
 
-      CSV.open('lib/data/races.csv', 'a') do |csv|
+      CSV.open(Rails.root.join('lib/data/races.csv'), 'a') do |csv|
         races.each do |race|
           race = race.to_h
           name = race.dig('race', 'name')
 
-          csv << [gender.downcase, name.parameterize, race['startDate'], race['stageCount']]
+          csv << [gender.downcase, name, name.parameterize, race['startDate'], race['stageCount']]
         end
       end
     end
@@ -59,7 +73,7 @@ module Vds
     def self.populate_riders_csv(gender:)
       riders = run_query(Vds::Queries::RIDERS, gender).data.riders.nodes
 
-      CSV.open('lib/data/riders.csv', 'a') do |csv|
+      CSV.open(Rails.root.join('lib/data/riders.csv'), 'a') do |csv|
         riders.each do |rider|
           rider = rider.to_h
           rider_season = rider['season'].to_h

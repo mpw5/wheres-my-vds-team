@@ -3,8 +3,8 @@
 module Vds
   module Queries
     TEAMS = Vds::GraphQlClient::Client.parse <<-GRAPHQL
-      query($year: Int!, $gender: Gender!) {
-        teams(year: $year, gender: $gender) {
+      query($year: Int!, $gender: Gender!, $first: Int = 100, $after: String) {
+        teams(year: $year, gender: $gender, first: $first, after: $after) {
           nodes {
             name
             manager {
@@ -13,11 +13,13 @@ module Vds
             riders {
               nodes {
                 rider {
-                  fullName
+                  displayName
                 }
               }
             }
+            locked
           }
+          pageInfo { endCursor hasNextPage }
         }
       }
     GRAPHQL
