@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Logs
+log/*
+tmp/*
+*.log
+
+# Environment
+.env
+.env.*
+
+# Dependencies
+node_modules/
+vendor/bundle/
+
+# Test files
+spec/
+test/
+coverage/
+
+# Documentation
+README.md
+docs/
+
+# CI/CD
+.github/
+.circleci/
+
+# Editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
