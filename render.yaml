@@ -4,7 +4,6 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    preDeployCommand: "bundle exec rake db:migrate db:seed"
     disk:
       name: wheres-my-vds-team-data
       mountPath: /app/db

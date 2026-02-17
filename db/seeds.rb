@@ -1,8 +1,5 @@
 require 'csv'
 
-Team.destroy_all
-Race.destroy_all
-
 teams = CSV.read(Rails.root.join('db', 'seeds', 'teams.csv'))
 
 teams.each do |team|
