@@ -2,7 +2,8 @@
 
 class Team < ApplicationRecord
   scope :teams_for, lambda { |team_ds|
-    where('lower(ds) = ?', team_ds&.downcase).or(where('lower(name) = ?', team_ds&.downcase))
+    term = "%#{team_ds&.downcase}%"
+    where('lower(ds) LIKE ?', term).or(where('lower(name) LIKE ?', term))
   }
 
   def riders_array
