@@ -3,7 +3,7 @@
 <% @teams.each do |team| %>
   <div class='results'>
     <h2><%= team.name %> - <%= team.ds %></h2>
-    <% Race.upcoming_races(team.team_type).each do |race| %>
+    <% @races[team.team_type].each do |race| %>
       <%= render 'race', race: race, team: team %>
     <% end %>
   </div>
