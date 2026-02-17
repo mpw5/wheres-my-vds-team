@@ -37,11 +37,15 @@ RUN bundle install
 # Copy the rest of the application
 COPY . .
 
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
+
 # Precompile assets with dummy secret key and skip database initialization
 RUN SECRET_KEY_BASE=dummy RAILS_GROUPS=assets bundle exec rake assets:precompile assets:clean
 
 # Expose port
 EXPOSE 3000
 
-# Start the Rails server (database setup happens via Render's release command)
+# Run database setup at startup (when persistent disk is mounted), then start server
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
