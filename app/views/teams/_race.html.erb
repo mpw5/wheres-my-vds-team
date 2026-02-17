@@ -1,17 +1,15 @@
-<% starting_riders = team.riders_array.intersection(race.startlist)%>
+<% starting_riders = team.riders_array.intersection(race.startlist) %>
 
-<div class ='race'>
+<div class='race'>
   <h3>
-    <a href=<%= "http://#{race.pcs_url}" %>><%= race.name %></a>
-    <span class='date'>&nbsp;&nbsp;&nbsp;<%= race.dates %></span>
+    <a href="http://<%= race.pcs_url %>"><%= race.name %></a>
+    <span class='date'><%= race.dates %></span>
   </h3>
-  <div>
-    <% unless starting_riders.empty? %>
-      <div>
-        <%= starting_riders.map(&:titleize).join(', ') %>
-      </div>
-    <% else %>
-      <div><i>No riders found</i></div>
-    <% end %>
-  </div>
+  <% unless starting_riders.empty? %>
+    <div class='riders-found'>
+      <%= starting_riders.map(&:titleize).join(', ') %>
+    </div>
+  <% else %>
+    <div class='no-riders'>No riders found</div>
+  <% end %>
 </div>
