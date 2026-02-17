@@ -9,8 +9,8 @@
   </div>
 <% end %>
 
+<% if @teams.empty? %>
 <div class='results'>
-  <% unless @teams %>
     <h2>No teams found!</h2>
-  <% end %>
 </div>
+<% end %>
