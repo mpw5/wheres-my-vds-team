@@ -58,38 +58,10 @@ class StartlistScraperService
   end
 
   def parse_name(raw_name)
-    name_as_array = raw_name.split
-    rotated_name = if raw_name.in?(riders_with_middle_names)
-                     name_as_array.rotate(name_as_array.length - 2)
-                   else
-                     name_as_array.rotate(name_as_array.length - 1)
-                   end
+    parts = raw_name.split
+    surname = parts.take_while { |part| part == part.upcase }
+    first_names = parts.drop(surname.length)
 
-    I18n.transliterate(rotated_name.join(' ').downcase)
-  end
-
-  def riders_with_middle_names
-    [
-      'LUDWIG Cecilie Uttrup',
-      'MOLANO Juan Sebastian',
-      'SÁNCHEZ Luis León',
-      'ROJAS José Joaquín',
-      'LÓPEZ Miguel Ángel',
-      'MARTÍNEZ Daniel Felipe',
-      'JOHANNESSEN Tobias Halland',
-      'JOHANNESSEN Anders Halland',
-      'LÓPEZ Juan Pedro',
-      'TEUTENBERG Tim Torn',
-      'HONORÉ Mikkel Frølich',
-      'PEDERSEN Rasmus Søjberg',
-      'FAURA José Luis',
-      'HERREÑO Martin Santiago',
-      'KAJAMINI Florian Samuel',
-      'MARTINEZ Guillermo Juan',
-      'PEÑUELA Francisco Joel',
-      'CEPEDA Jefferson Alveiro',
-      'HAGENES Per Strand',
-      'ANDRESEN Tobias Lund'
-    ]
+    I18n.transliterate((first_names + surname).join(' ').downcase)
   end
 end
