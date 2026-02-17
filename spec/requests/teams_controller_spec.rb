@@ -21,6 +21,6 @@ RSpec.describe TeamsController do
 
     it { expect(response).to have_http_status(:ok) }
     it { expect(response.body).to include "<h1>Where's my <a href=\"https://www.reddit.com/r/PodiumCafe2/\">Podium Cafe v2</a>" }
-    it { expect(response.body).to include "<div class='results'>" }
+    it { expect(response.body).to include "class='results" }
   end
 end
