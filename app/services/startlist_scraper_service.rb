@@ -49,8 +49,8 @@ class StartlistScraperService
   end
 
   def add_riders_for(team)
-    team.first.children.children.children.children.each do |rider|
-      raw_name = rider.text
+    team.css('a').each do |rider|
+      raw_name = rider.text.strip
       next unless raw_name.length > 3
 
       riders << parse_name(raw_name)
