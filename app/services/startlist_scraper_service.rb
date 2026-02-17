@@ -39,12 +39,13 @@ class StartlistScraperService
     options.binary = '/usr/bin/chromium' if File.exist?('/usr/bin/chromium')
 
     driver = Selenium::WebDriver.for(:chrome, options: options)
-    driver.get(url)
-    # sleep 3
-
-    html = driver.page_source
-    driver.quit
-    Nokogiri::HTML(html)
+    begin
+      driver.get(url)
+      html = driver.page_source
+      Nokogiri::HTML(html)
+    ensure
+      driver.quit
+    end
   end
 
   def add_riders_for(team)
