@@ -9,14 +9,18 @@ class Race < ApplicationRecord
   }
 
   def startlist
-    if scraped_startlist.nil? || updated_at.before?(12.hours.ago)
-      update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
-    end
+    refresh_startlist if scraped_startlist.nil? || updated_at.before?(12.hours.ago)
 
     scraped_startlist.split(',')
   rescue StandardError => e
     Rails.logger.error("Failed to fetch startlist for #{pcs_name}: #{e.message}")
     scraped_startlist&.split(',') || []
+  end
+
+  private
+
+  def refresh_startlist
+    update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
   end
 
   def dates

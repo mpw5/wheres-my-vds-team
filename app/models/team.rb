@@ -6,6 +6,8 @@ class Team < ApplicationRecord
   }
 
   def riders_array
-    riders&.split(',')&.sort&.map { |rider| I18n.transliterate(rider).downcase } || []
+    return [] if riders.nil?
+
+    riders.split(',').sort.map { |rider| I18n.transliterate(rider).downcase }
   end
 end
