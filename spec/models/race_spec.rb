@@ -34,6 +34,44 @@ RSpec.describe Race do
       it { expect(StartlistScraperService).not_to have_received(:new) }
       it { expect(race.startlist).to eq %w[rider_1 rider_2] }
     end
+
+    context 'when the cached startlist is stale' do
+      before do
+        race.update!(scraped_startlist: 'old_rider', updated_at: 13.hours.ago)
+      end
+
+      it 're-scrapes the startlist' do
+        race.startlist
+        expect(StartlistScraperService).to have_received(:new)
+      end
+    end
+
+    context 'when the scraper raises an error' do
+      before do
+        allow(startlist_scraper_service).to receive(:call).and_raise(StandardError, 'connection failed')
+      end
+
+      it 'returns an empty array' do
+        expect(race.startlist).to eq []
+      end
+
+      it 'logs the error' do
+        allow(Rails.logger).to receive(:error)
+        race.startlist
+        expect(Rails.logger).to have_received(:error).with(/connection failed/)
+      end
+    end
+
+    context 'when the scraper fails but a cached startlist exists' do
+      before do
+        race.update!(scraped_startlist: 'cached_rider', updated_at: 13.hours.ago)
+        allow(startlist_scraper_service).to receive(:call).and_raise(StandardError, 'timeout')
+      end
+
+      it 'returns the cached startlist' do
+        expect(race.startlist).to eq %w[cached_rider]
+      end
+    end
   end
 
   describe 'dates' do

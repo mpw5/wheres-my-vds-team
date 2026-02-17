@@ -17,12 +17,6 @@ class Race < ApplicationRecord
     scraped_startlist&.split(',') || []
   end
 
-  private
-
-  def refresh_startlist
-    update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
-  end
-
   def dates
     if end_date.eql?(start_date)
       start_date.strftime('%d/%m/%Y')
@@ -33,5 +27,11 @@ class Race < ApplicationRecord
 
   def pcs_url
     "www.procyclingstats.com/race/#{pcs_name}/#{Time.zone.today.year}/startlist"
+  end
+
+  private
+
+  def refresh_startlist
+    update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
   end
 end
