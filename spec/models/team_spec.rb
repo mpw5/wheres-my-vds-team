@@ -7,5 +7,11 @@ RSpec.describe Team do
 
   describe 'riders_array' do
     it { expect(team.riders_array).to eq ['rider one', 'rider three', 'rider two'] }
+
+    context 'when riders is nil' do
+      subject(:team) { create(:team, riders: nil) }
+
+      it { expect(team.riders_array).to eq [] }
+    end
   end
 end

@@ -2,17 +2,19 @@
 
 class Race < ApplicationRecord
   scope :upcoming_races, lambda { |race_type|
-    Race.order(start_date: :asc).where(race_type:).and(
-      Race.order(start_date: :asc).where(end_date: Time.zone.today..)
-    ).first(10)
+    where(race_type:)
+      .where(end_date: Time.zone.today..)
+      .order(start_date: :asc)
+      .limit(10)
   }
 
   def startlist
-    if scraped_startlist.nil? || updated_at.before?(12.hours.ago)
-      update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
-    end
+    refresh_startlist if scraped_startlist.nil? || updated_at.before?(12.hours.ago)
 
     scraped_startlist.split(',')
+  rescue StandardError => e
+    Rails.logger.error("Failed to fetch startlist for #{pcs_name}: #{e.message}")
+    scraped_startlist&.split(',') || []
   end
 
   def dates
@@ -25,5 +27,11 @@ class Race < ApplicationRecord
 
   def pcs_url
     "www.procyclingstats.com/race/#{pcs_name}/#{Time.zone.today.year}/startlist"
+  end
+
+  private
+
+  def refresh_startlist
+    update!(scraped_startlist: StartlistScraperService.new(pcs_url).call.join(','))
   end
 end
