@@ -14,6 +14,9 @@ class Race < ApplicationRecord
     end
 
     scraped_startlist.split(',')
+  rescue StandardError => e
+    Rails.logger.error("Failed to fetch startlist for #{pcs_name}: #{e.message}")
+    scraped_startlist&.split(',') || []
   end
 
   def dates
