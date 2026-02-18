@@ -19,58 +19,68 @@ RSpec.describe Race do
   end
 
   describe 'startlist' do
-    let(:startlist_scraper_service) { instance_double StartlistScraperService }
+    let(:startlist_scraper_service) { instance_double(StartlistScraperService, call: nil) }
 
     before do
-      allow(StartlistScraperService).to receive(:new).and_return(startlist_scraper_service)
-      allow(startlist_scraper_service).to receive(:call).and_return(%w[rider_1 rider_2])
+      allow(StartlistScraperService).to receive(:new).with(race).and_return(startlist_scraper_service)
     end
 
-    it { expect(race.startlist).to eq %w[rider_1 rider_2] }
+    context 'when no startlist has been scraped' do
+      it 'triggers a refresh' do
+        race.startlist
+        expect(startlist_scraper_service).to have_received(:call)
+      end
+    end
 
-    context 'when the startlist has already been scraped' do
+    context 'when a fresh startlist is cached' do
       before { race.update!(scraped_startlist: 'rider_1,rider_2') }
 
-      it { expect(StartlistScraperService).not_to have_received(:new) }
       it { expect(race.startlist).to eq %w[rider_1 rider_2] }
+
+      it 'does not trigger a refresh' do
+        race.startlist
+        expect(startlist_scraper_service).not_to have_received(:call)
+      end
     end
 
     context 'when the cached startlist is stale' do
-      before do
-        race.update!(scraped_startlist: 'old_rider', updated_at: 13.hours.ago)
-      end
+      before { race.update!(scraped_startlist: 'old_rider', updated_at: 13.hours.ago) }
 
-      it 're-scrapes the startlist' do
+      it 'triggers a refresh' do
         race.startlist
-        expect(StartlistScraperService).to have_received(:new)
+        expect(startlist_scraper_service).to have_received(:call)
       end
     end
+  end
 
-    context 'when the scraper raises an error' do
-      before do
-        allow(startlist_scraper_service).to receive(:call).and_raise(StandardError, 'connection failed')
-      end
+  describe 'refresh_startlist!' do
+    let(:startlist_scraper_service) { instance_double(StartlistScraperService, call: nil) }
 
-      it 'returns an empty array' do
-        expect(race.startlist).to eq []
-      end
-
-      it 'logs the error' do
-        allow(Rails.logger).to receive(:error)
-        race.startlist
-        expect(Rails.logger).to have_received(:error).with(/connection failed/)
-      end
+    before do
+      allow(StartlistScraperService).to receive(:new).with(race).and_return(startlist_scraper_service)
     end
 
-    context 'when the scraper fails but a cached startlist exists' do
-      before do
-        race.update!(scraped_startlist: 'cached_rider', updated_at: 13.hours.ago)
-        allow(startlist_scraper_service).to receive(:call).and_raise(StandardError, 'timeout')
-      end
+    it 'delegates to StartlistScraperService' do
+      race.refresh_startlist!
+      expect(startlist_scraper_service).to have_received(:call)
+    end
+  end
 
-      it 'returns the cached startlist' do
-        expect(race.startlist).to eq %w[cached_rider]
-      end
+  describe 'startlist_stale?' do
+    context 'when no startlist has been scraped' do
+      it { expect(race).to be_startlist_stale }
+    end
+
+    context 'when the startlist was recently scraped' do
+      before { race.update!(scraped_startlist: 'rider_1', updated_at: 1.hour.ago) }
+
+      it { expect(race).not_to be_startlist_stale }
+    end
+
+    context 'when the startlist was scraped more than 12 hours ago' do
+      before { race.update!(scraped_startlist: 'rider_1', updated_at: 13.hours.ago) }
+
+      it { expect(race).to be_startlist_stale }
     end
   end
 
