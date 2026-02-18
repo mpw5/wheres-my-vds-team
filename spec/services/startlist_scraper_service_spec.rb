@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe StartlistScraperService do
-  subject(:scraper) { described_class.new('www.test.com/race/milano-sanremo/2023/startlist') }
+  subject(:scraper) { described_class.new([]) }
 
   describe 'parse_name' do
     it { expect(scraper.parse_name('LUDWIG Cecilie Uttrup')).to eq 'cecilie uttrup ludwig' }
