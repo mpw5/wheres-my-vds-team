@@ -11,9 +11,9 @@ class StartlistScraperService
     return if @races.empty?
 
     driver = build_driver
-    @races.each do |race|
+    @races.each_with_index do |race, index|
       scrape_race(driver, race)
-      sleep 2 # be polite to PCS
+      sleep(rand(3..6)) unless index == @races.size - 1
     end
   ensure
     driver&.quit
@@ -32,7 +32,8 @@ class StartlistScraperService
   def scrape_race(driver, race)
     doc = fetch_race_page(driver, race.pcs_url)
     riders = extract_riders(doc)
-    race.update!(scraped_startlist: riders.join(','))
+    Rails.logger.info("#{race.pcs_name}: found #{riders.size} riders")
+    race.update!(scraped_startlist: riders.join(',')) if riders.any?
   rescue StandardError => e
     Rails.logger.error("Failed to fetch startlist for #{race.pcs_name}: #{e.message}")
   end
@@ -43,18 +44,10 @@ class StartlistScraperService
   end
 
   def extract_riders(doc)
-    riders = []
-    startlist = doc.css('.startlist_v4')
-    return riders if startlist.empty?
-
-    startlist.first.children.each do |team|
-      team.css('.ridersCont a').each do |rider|
-        raw_name = rider.text.strip
-        riders << parse_name(raw_name) if raw_name.length > 3
-      end
+    doc.css('.startlist_v4 a[href*="rider"]').filter_map do |rider|
+      raw_name = rider.text.strip
+      parse_name(raw_name) if raw_name.length > 3
     end
-
-    riders
   end
 
   def build_driver
