@@ -15,7 +15,7 @@ RUN apt-get update -qq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Chromium (easier alternative to Chrome)
+# Install Chromium
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     chromium \

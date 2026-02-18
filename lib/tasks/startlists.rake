@@ -8,7 +8,14 @@ namespace :startlists do
 
     puts "Found #{stale.size} stale startlist(s) out of #{races.size} upcoming race(s)"
 
+    stale.each { |r| puts "  - #{r.pcs_name} (#{r.pcs_url})" }
+
     StartlistScraperService.new(stale).call
+
+    stale.each do |r|
+      r.reload
+      puts "  #{r.pcs_name}: #{r.startlist.size} riders cached"
+    end
 
     puts 'Done'
   end
