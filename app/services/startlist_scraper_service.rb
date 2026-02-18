@@ -30,6 +30,10 @@ class StartlistScraperService
     options.add_argument('--headless=new')
     options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-software-rasterizer')
+    options.add_argument('--js-flags=--max-old-space-size=256')
     options.add_argument('--window-size=1400,900')
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
@@ -38,6 +42,7 @@ class StartlistScraperService
     options.binary = '/usr/bin/chromium' if File.exist?('/usr/bin/chromium')
 
     driver = Selenium::WebDriver.for(:chrome, options: options)
+    driver.manage.timeouts.page_load = 30
     begin
       driver.get(url)
       html = driver.page_source
