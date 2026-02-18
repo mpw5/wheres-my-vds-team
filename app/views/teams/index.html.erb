@@ -1,7 +1,7 @@
 <%= render 'search' %>
 
 <% @teams.each do |team| %>
-  <div class='results'>
+  <div class='results <%= team.team_type %>'>
     <h2><%= team.name %> - <%= team.ds %></h2>
     <% @races[team.team_type].each do |race| %>
       <%= render 'race', race: race, team: team %>

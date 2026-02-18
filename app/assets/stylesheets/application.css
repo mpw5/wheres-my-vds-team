@@ -110,9 +110,35 @@ a:hover {
 
 .results h2 {
   font-size: 1.2em;
-  border-bottom: 2px solid #2563eb;
+  border-bottom: 2px solid #ccc;
   padding-bottom: 6px;
   margin-bottom: 16px;
+}
+
+/* --- Gender accents --- */
+
+.results.male h2 {
+  border-bottom-color: #0d9488;
+}
+
+.results.male .race h3 a {
+  color: #0f766e;
+}
+
+.results.male .race h3 a:hover {
+  color: #115e59;
+}
+
+.results.female h2 {
+  border-bottom-color: #d97706;
+}
+
+.results.female .race h3 a {
+  color: #b45309;
+}
+
+.results.female .race h3 a:hover {
+  color: #92400e;
 }
 
 /* --- Race cards --- */
