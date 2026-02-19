@@ -1,22 +1,20 @@
 # frozen_string_literal: true
 
 namespace :startlists do
-  desc 'Refresh stale or missing startlists (single browser instance)'
+  desc 'Run the scraper script locally against the Rails server'
   task refresh: :environment do
-    races = Race.where(end_date: Time.zone.today..).order(start_date: :asc).limit(10)
-    stale = races.select(&:startlist_stale?)
-
-    puts "Found #{stale.size} stale startlist(s) out of #{races.size} upcoming race(s)"
-
-    stale.each { |r| puts "  - #{r.pcs_name} (#{r.pcs_url})" }
-
-    StartlistScraperService.new(stale).call
-
-    stale.each do |r|
-      r.reload
-      puts "  #{r.pcs_name}: #{r.startlist.size} riders cached"
+    app_url = ENV.fetch('APP_URL', 'http://localhost:3003')
+    api_key = ENV.fetch('SCRAPER_API_KEY') do
+      Rails.application.credentials.scraper_api_key ||
+        abort('Set SCRAPER_API_KEY env var or add scraper_api_key to credentials')
     end
 
-    puts 'Done'
+    script = Rails.root.join('.github/scripts/scrape_startlists.rb')
+    abort("Scraper script not found at #{script}") unless script.exist?
+
+    puts "Scraping startlists and posting to #{app_url}..."
+    Bundler.with_unbundled_env do
+      system({ 'APP_URL' => app_url, 'SCRAPER_API_KEY' => api_key }, "ruby #{script}") || abort('Scraper failed')
+    end
   end
 end

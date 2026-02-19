@@ -13,4 +13,4 @@ services:
         value: true
       - key: WEB_CONCURRENCY
         value: 0
-    plan: standard
+    plan: starter

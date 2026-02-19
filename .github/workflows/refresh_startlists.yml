@@ -1,0 +1,29 @@
+name: "Refresh Startlists"
+on:
+  schedule:
+    - cron: '0 6,18 * * *' # 6am and 6pm UTC
+  workflow_dispatch: # allow manual trigger
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install dependencies
+        run: |
+          gem install nokogiri selenium-webdriver
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Scrape and push startlists
+        env:
+          APP_URL: ${{ secrets.app_url }}
+          SCRAPER_API_KEY: ${{ secrets.scraper_api_key }}
+        run: ruby .github/scripts/scrape_startlists.rb

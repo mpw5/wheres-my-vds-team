@@ -9,19 +9,7 @@ class Race < ApplicationRecord
   }
 
   def startlist
-    refresh_startlist! if startlist_stale?
     scraped_startlist&.split(',') || []
-  end
-
-  def refresh_startlist!
-    StartlistScraperService.new(self).call
-  rescue StandardError => e
-    Rails.logger.error("Failed to refresh startlist for #{pcs_name}: #{e.message}")
-    update!(updated_at: Time.zone.now)
-  end
-
-  def startlist_stale?
-    scraped_startlist.nil? || updated_at.before?(12.hours.ago)
   end
 
   def dates
