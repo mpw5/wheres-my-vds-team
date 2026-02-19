@@ -12,7 +12,6 @@ gem 'nokogiri'
 gem 'puma', '~> 7.2'
 gem 'rails', '~> 8.1.1'
 gem 'redis', '~> 5.4'
-gem 'selenium-webdriver'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
 gem 'sqlite3', '~> 2.9'
@@ -23,6 +22,7 @@ gem 'tzinfo-data', platforms: %i[ mingw mswin x64_mingw jruby ]
 group :development, :test do
   gem 'debug', platforms: %i[ mri mingw x64_mingw ]
   gem 'brakeman'
+  gem 'dotenv-rails'
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'pry'

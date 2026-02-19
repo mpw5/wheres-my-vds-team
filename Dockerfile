@@ -15,14 +15,6 @@ RUN apt-get update -qq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Chromium
-RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-    chromium \
-    chromium-driver && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # Set working directory
 WORKDIR /app
 
