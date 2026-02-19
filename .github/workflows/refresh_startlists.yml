@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '0 6,18 * * *' # 6am and 6pm UTC
   workflow_dispatch: # allow manual trigger
+  repository_dispatch:
+    types: [deploy_completed]
 
 jobs:
   scrape:
