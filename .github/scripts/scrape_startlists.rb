@@ -23,7 +23,7 @@ def build_driver
                        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36')
 
   driver = Selenium::WebDriver.for(:chrome, options: options)
-  driver.manage.timeouts.page_load = 30
+  driver.manage.timeouts.page_load = 60
 
   # Remove the webdriver flag that Cloudflare detects
   driver.execute_cdp('Page.addScriptToEvaluateOnNewDocument', source: <<~JS)
@@ -120,7 +120,9 @@ begin
       puts "    Skipping (no riders found)"
     end
 
-    sleep(rand(3..6)) unless index == pcs_names.size - 1
+    sleep(rand(5..10)) unless index == pcs_names.size - 1
+  rescue StandardError => e
+    puts "  ERROR scraping #{pcs_name}: #{e.message}"
   end
 ensure
   driver.quit
