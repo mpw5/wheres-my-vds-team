@@ -5,15 +5,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Deploy to Render
         uses: johnbeynon/render-deploy-action@v0.0.9
         with:
           service-id: ${{ secrets.render_service_id }}
           api-key: ${{ secrets.render_api_key }}
-
-      - name: Wait for Render to start
-        run: sleep 60
 
       - name: Trigger startlist refresh
         run: |
