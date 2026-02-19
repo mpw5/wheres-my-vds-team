@@ -15,6 +15,9 @@ class Race < ApplicationRecord
 
   def refresh_startlist!
     StartlistScraperService.new(self).call
+  rescue StandardError => e
+    Rails.logger.error("Failed to refresh startlist for #{pcs_name}: #{e.message}")
+    update!(updated_at: Time.zone.now)
   end
 
   def startlist_stale?
