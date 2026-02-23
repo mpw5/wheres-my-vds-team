@@ -22,7 +22,7 @@ jobs:
           gem install nokogiri selenium-webdriver
 
       - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
 
       - name: Scrape and push startlists
         env:
