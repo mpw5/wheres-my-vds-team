@@ -10,24 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_21_143442) do
+ActiveRecord::Schema[8.1].define(version: 2024_11_21_143442) do
   create_table "races", force: :cascade do |t|
-    t.text "race_type"
+    t.datetime "created_at", null: false
+    t.date "end_date"
     t.text "name"
     t.text "pcs_name"
-    t.date "start_date"
-    t.date "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.text "race_type"
     t.text "scraped_startlist"
+    t.date "start_date"
+    t.datetime "updated_at", null: false
   end
 
   create_table "teams", force: :cascade do |t|
-    t.text "team_type"
+    t.datetime "created_at", null: false
     t.text "ds"
     t.text "name"
     t.text "riders"
-    t.datetime "created_at", null: false
+    t.text "team_type"
     t.datetime "updated_at", null: false
   end
 end
