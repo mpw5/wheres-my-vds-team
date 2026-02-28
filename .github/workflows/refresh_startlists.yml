@@ -1,7 +1,7 @@
 name: "Refresh Startlists"
 on:
   schedule:
-    - cron: '0 6,18 * * *' # 6am and 6pm UTC
+    - cron: '0 0,12 * * *' # 12am and 12pm UTC
   workflow_dispatch: # allow manual trigger
   repository_dispatch:
     types: [deploy_completed]
