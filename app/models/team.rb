@@ -2,7 +2,9 @@
 
 class Team < ApplicationRecord
   scope :teams_for, lambda { |team_ds|
-    term = "%#{team_ds&.downcase}%"
+    return none if team_ds.blank?
+
+    term = "%#{team_ds.downcase}%"
     where('lower(ds) LIKE ?', term).or(where('lower(name) LIKE ?', term))
   }
 
