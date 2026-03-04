@@ -43,6 +43,6 @@ RSpec.describe Race do
   end
 
   describe 'pcs_url' do
-    it { expect(race.pcs_url).to eq "www.procyclingstats.com/race/#{race.pcs_name}/#{Time.zone.today.year}/startlist" }
+    it { expect(race.pcs_url).to eq "cyclingflash.com/race/#{race.pcs_name}-#{Time.zone.today.year}/startlist" }
   end
 end

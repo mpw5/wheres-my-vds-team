@@ -1,8 +1,8 @@
-<% starting_riders = team.riders_array.intersection(race.startlist) %>
+<% starting_riders = team.matching_riders(race.startlist) %>
 
 <div class='race'>
   <h3>
-    <a href="http://<%= race.pcs_url %>"><%= race.name %></a>
+    <a href="https://<%= race.pcs_url %>"><%= race.name %></a>
     <span class='date'><%= race.dates %></span>
   </h3>
   <% unless starting_riders.empty? %>

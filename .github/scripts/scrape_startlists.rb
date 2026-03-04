@@ -3,71 +3,49 @@
 require 'json'
 require 'net/http'
 require 'nokogiri'
-require 'selenium-webdriver'
 
 APP_URL = ENV.fetch('APP_URL')
 API_KEY = ENV.fetch('SCRAPER_API_KEY')
 
-RACES_URL = 'https://www.procyclingstats.com/race'
+CYCLINGFLASH_URL = 'https://cyclingflash.com/race'
 YEAR = Time.now.year
 
-def build_driver
-  options = Selenium::WebDriver::Chrome::Options.new
-  options.add_argument('--headless=new')
-  options.add_argument('--disable-gpu')
-  options.add_argument('--no-sandbox')
-  options.add_argument('--disable-dev-shm-usage')
-  options.add_argument('--window-size=1400,900')
-  options.add_argument('--disable-blink-features=AutomationControlled')
-  options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' \
-                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36')
-
-  driver = Selenium::WebDriver.for(:chrome, options: options)
-  driver.manage.timeouts.page_load = 60
-
-  # Remove the webdriver flag that Cloudflare detects
-  driver.execute_cdp('Page.addScriptToEvaluateOnNewDocument', source: <<~JS)
-    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-  JS
-
-  driver
-end
-
-def parse_name(raw_name)
-  parts = raw_name.split
-  surname = parts.take_while { |part| part == part.upcase }
-  first_names = parts.drop(surname.length)
-  (first_names + surname).join(' ').downcase
-    .unicode_normalize(:nfkd)
-    .gsub(/[\u0300-\u036f]/, '')
-end
-
-def wait_for_cloudflare(driver)
-  15.times do |i|
-    break unless driver.title.include?('Just a moment')
-
-    puts "    Waiting for Cloudflare challenge (#{i + 1}s)..."
-    sleep 1
+def fetch_page(url)
+  uri = URI(url)
+  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+    request = Net::HTTP::Get.new(uri)
+    request['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ' \
+                            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36'
+    http.request(request)
   end
+
+  return response.body if response.is_a?(Net::HTTPSuccess)
+
+  puts "    HTTP #{response.code} for #{url}"
+  nil
 end
 
-def scrape_race(driver, pcs_name)
-  url = "#{RACES_URL}/#{pcs_name}/#{YEAR}/startlist"
+def scrape_race(pcs_name)
+  url = "#{CYCLINGFLASH_URL}/#{pcs_name}-#{YEAR}/startlist"
   puts "  Fetching #{url}..."
 
-  driver.get(url)
-  wait_for_cloudflare(driver)
-  doc = Nokogiri::HTML(driver.page_source)
+  html = fetch_page(url)
+  return [] unless html
 
-  if driver.title.include?('Just a moment')
-    puts "    Cloudflare still blocking — skipping"
-    return []
-  end
+  doc = Nokogiri::HTML(html)
 
-  doc.css('.startlist_v4 a[href*="rider"]').filter_map do |rider|
-    raw_name = rider.text.strip
-    parse_name(raw_name) if raw_name.length > 3
-  end
+  # Remove footer to avoid picking up featured rider links (e.g. Pogačar, MVDP)
+  doc.css('footer').each(&:remove)
+
+  # Rider profile links have href like /profile/rider-name-slug
+  doc.css('a[href*="/profile/"]').filter_map do |link|
+    href = link['href']
+    next unless href&.match?(%r{/profile/[\w-]+$})
+
+    slug = href.split('/profile/').last
+    # Convert slug to "first last" format: "jasper-philipsen" -> "jasper philipsen"
+    slug.tr('-', ' ')
+  end.uniq
 end
 
 def post_startlist(pcs_name, riders)
@@ -108,24 +86,19 @@ end
 pcs_names = fetch_races
 puts "Scraping #{pcs_names.size} upcoming races..."
 
-driver = build_driver
-begin
-  pcs_names.each_with_index do |pcs_name, index|
-    riders = scrape_race(driver, pcs_name)
-    puts "  Found #{riders.size} riders for #{pcs_name}"
+pcs_names.each_with_index do |pcs_name, index|
+  riders = scrape_race(pcs_name)
+  puts "  Found #{riders.size} riders for #{pcs_name}"
 
-    if riders.any?
-      post_startlist(pcs_name, riders)
-    else
-      puts "    Skipping (no riders found)"
-    end
-
-    sleep(rand(5..10)) unless index == pcs_names.size - 1
-  rescue StandardError => e
-    puts "  ERROR scraping #{pcs_name}: #{e.message}"
+  if riders.any?
+    post_startlist(pcs_name, riders)
+  else
+    puts "    Skipping (no riders found)"
   end
-ensure
-  driver.quit
+
+  sleep(rand(2..5)) unless index == pcs_names.size - 1
+rescue StandardError => e
+  puts "  ERROR scraping #{pcs_name}: #{e.message}"
 end
 
 puts 'Done!'

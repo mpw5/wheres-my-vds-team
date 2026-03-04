@@ -11,6 +11,23 @@ class Team < ApplicationRecord
   def riders_array
     return [] if riders.nil?
 
-    riders.split(',').sort.map { |rider| I18n.transliterate(rider).downcase }
+    riders.split(',').sort.map { |rider| normalise(rider) }
+  end
+
+  def matching_riders(startlist)
+    return [] if riders.nil?
+
+    normalised_startlist = startlist.map { |name| normalise(name).split }
+
+    riders.split(',').sort.select do |rider|
+      rider_words = normalise(rider).split
+      normalised_startlist.any? { |sl_words| (rider_words - sl_words).empty? }
+    end
+  end
+
+  private
+
+  def normalise(name)
+    I18n.transliterate(name).downcase.delete("'").tr('-', ' ').gsub(/[()]/, '').squeeze(' ').strip
   end
 end
