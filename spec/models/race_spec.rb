@@ -29,10 +29,9 @@ RSpec.describe Race do
       it { expect(race).not_to be_stale }
     end
 
-    context 'when the startlist was scraped over 12 hours ago' do
+    context 'when the startlist was scraped over 6 hours ago' do
       before do
-        race.update!(scraped_startlist: 'rider_1,rider_2')
-        race.update_column(:updated_at, 13.hours.ago)
+        race.update!(scraped_startlist: 'rider_1,rider_2', updated_at: 7.hours.ago)
       end
 
       it { expect(race).to be_stale }
@@ -40,12 +39,12 @@ RSpec.describe Race do
   end
 
   describe 'startlist' do
-    before { allow(race).to receive(:refresh_startlist!) }
+    before { allow(Net::HTTP).to receive(:start).and_return(instance_double(Net::HTTPNotFound, is_a?: false)) }
 
     context 'when no startlist has been scraped' do
-      it 'refreshes the startlist' do
+      it 'attempts to scrape' do
         race.startlist
-        expect(race).to have_received(:refresh_startlist!)
+        expect(Net::HTTP).to have_received(:start)
       end
 
       it { expect(race.startlist).to eq [] }
@@ -54,9 +53,9 @@ RSpec.describe Race do
     context 'when a fresh startlist is cached' do
       before { race.update!(scraped_startlist: 'rider_1,rider_2') }
 
-      it 'does not refresh the startlist' do
+      it 'does not attempt to scrape' do
         race.startlist
-        expect(race).not_to have_received(:refresh_startlist!)
+        expect(Net::HTTP).not_to have_received(:start)
       end
 
       it { expect(race.startlist).to eq %w[rider_1 rider_2] }

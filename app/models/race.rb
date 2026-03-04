@@ -42,18 +42,20 @@ class Race < ApplicationRecord
   private
 
   def scrape_startlist
-    url = "#{CYCLINGFLASH_URL}/#{pcs_name}-#{Time.zone.today.year}/startlist"
-    uri = URI(url)
+    html = fetch_startlist_page
+    html ? parse_startlist(html) : []
+  end
 
+  def fetch_startlist_page
+    uri = URI("#{CYCLINGFLASH_URL}/#{pcs_name}-#{Time.zone.today.year}/startlist")
     response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-      request = Net::HTTP::Get.new(uri)
-      request['User-Agent'] = 'Mozilla/5.0 (compatible; VDS-Team/1.0)'
-      http.request(request)
+      http.request(Net::HTTP::Get.new(uri))
     end
+    response.is_a?(Net::HTTPSuccess) ? response.body : nil
+  end
 
-    return [] unless response.is_a?(Net::HTTPSuccess)
-
-    doc = Nokogiri::HTML(response.body)
+  def parse_startlist(html)
+    doc = Nokogiri::HTML(html)
     doc.css('footer').each(&:remove)
 
     doc.css('a[href*="/profile/"]').filter_map do |link|
