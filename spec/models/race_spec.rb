@@ -18,15 +18,75 @@ RSpec.describe Race do
     it { expect(described_class.upcoming_races('male')).not_to include yet_another_race }
   end
 
-  describe 'startlist' do
+  describe 'stale?' do
     context 'when no startlist has been scraped' do
+      it { expect(race).to be_stale }
+    end
+
+    context 'when the startlist was scraped recently' do
+      before { race.update!(scraped_startlist: 'rider_1,rider_2') }
+
+      it { expect(race).not_to be_stale }
+    end
+
+    context 'when the startlist was scraped over 6 hours ago' do
+      before do
+        race.update!(scraped_startlist: 'rider_1,rider_2', updated_at: 7.hours.ago)
+      end
+
+      it { expect(race).to be_stale }
+    end
+  end
+
+  describe 'startlist' do
+    before { allow(Net::HTTP).to receive(:start).and_return(instance_double(Net::HTTPNotFound, is_a?: false)) }
+
+    context 'when no startlist has been scraped' do
+      it 'attempts to scrape' do
+        race.startlist
+        expect(Net::HTTP).to have_received(:start)
+      end
+
       it { expect(race.startlist).to eq [] }
     end
 
-    context 'when a startlist is cached' do
+    context 'when a fresh startlist is cached' do
       before { race.update!(scraped_startlist: 'rider_1,rider_2') }
 
+      it 'does not attempt to scrape' do
+        race.startlist
+        expect(Net::HTTP).not_to have_received(:start)
+      end
+
       it { expect(race.startlist).to eq %w[rider_1 rider_2] }
+    end
+  end
+
+  describe 'refresh_startlist!' do
+    let(:html) do
+      <<~HTML
+        <html><body>
+          <a href="/profile/tadej-pogacar">Tadej Pogačar</a>
+          <a href="/profile/jonas-vingegaard">Jonas Vingegaard</a>
+          <footer><a href="/profile/someone-else">Someone Else</a></footer>
+        </body></html>
+      HTML
+    end
+
+    before do
+      response = instance_double(Net::HTTPOK, body: html)
+      allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+      allow(Net::HTTP).to receive(:start).and_return(response)
+    end
+
+    it 'scrapes and stores the startlist' do
+      race.refresh_startlist!
+      expect(race.reload.scraped_startlist).to eq 'tadej pogacar,jonas vingegaard'
+    end
+
+    it 'excludes footer links' do
+      race.refresh_startlist!
+      expect(race.reload.scraped_startlist).not_to include('someone else')
     end
   end
 
@@ -43,6 +103,6 @@ RSpec.describe Race do
   end
 
   describe 'pcs_url' do
-    it { expect(race.pcs_url).to eq "www.procyclingstats.com/race/#{race.pcs_name}/#{Time.zone.today.year}/startlist" }
+    it { expect(race.pcs_url).to eq "cyclingflash.com/race/#{race.pcs_name}-#{Time.zone.today.year}/startlist" }
   end
 end

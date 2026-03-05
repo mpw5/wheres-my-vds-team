@@ -17,3 +17,10 @@ races.each do |race|
 
   Race.find_or_create_by!(race_type:, name:, pcs_name:, start_date:, end_date:)
 end
+
+# Pre-fetch startlists for upcoming races so the first page load after deployment is fast
+%w[male female].each do |type|
+  Race.upcoming_races(type).each do |race|
+    race.refresh_startlist!
+  end
+end
