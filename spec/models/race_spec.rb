@@ -66,8 +66,11 @@ RSpec.describe Race do
     let(:html) do
       <<~HTML
         <html><body>
-          <a href="/profile/tadej-pogacar">Tadej Pogačar</a>
-          <a href="/profile/jonas-vingegaard">Jonas Vingegaard</a>
+          <table><tbody>
+            <tr><td>1</td><td><a href="/profile/tadej-pogacar">Tadej Pogačar</a></td></tr>
+            <tr><td>2</td><td><a href="/profile/jonas-vingegaard">Jonas Vingegaard</a></td></tr>
+            <tr><td>R</td><td><a href="/profile/reserve-rider">Reserve Rider</a></td></tr>
+          </tbody></table>
           <footer><a href="/profile/someone-else">Someone Else</a></footer>
         </body></html>
       HTML
@@ -87,6 +90,11 @@ RSpec.describe Race do
     it 'excludes footer links' do
       race.refresh_startlist!
       expect(race.reload.scraped_startlist).not_to include('someone else')
+    end
+
+    it 'excludes reserve riders' do
+      race.refresh_startlist!
+      expect(race.reload.scraped_startlist).not_to include('reserve rider')
     end
   end
 

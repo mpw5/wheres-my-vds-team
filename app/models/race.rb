@@ -58,11 +58,16 @@ class Race < ApplicationRecord
     doc = Nokogiri::HTML(html)
     doc.css('footer').each(&:remove)
 
-    doc.css('a[href*="/profile/"]').filter_map do |link|
-      href = link['href']
-      next unless href&.match?(%r{/profile/[\w-]+$})
+    doc.css('tr')
+       .reject { |row| row.at_css('td')&.text&.strip == 'R' }
+       .filter_map { |row| extract_rider_name(row) }
+       .uniq
+  end
 
-      href.split('/profile/').last.tr('-', ' ')
-    end.uniq
+  def extract_rider_name(row)
+    href = row.at_css('a[href*="/profile/"]')&.[]('href')
+    return unless href&.match?(%r{/profile/[\w-]+$})
+
+    href.split('/profile/').last.tr('-', ' ')
   end
 end
