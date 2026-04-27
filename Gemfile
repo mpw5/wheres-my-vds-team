@@ -9,7 +9,7 @@ gem 'graphql-client'
 gem 'importmap-rails'
 gem 'jbuilder'
 gem 'nokogiri'
-gem 'puma', '~> 7.2'
+gem 'puma', '~> 8.0'
 gem 'rails', '~> 8.1.1'
 gem 'redis', '~> 5.4'
 gem 'simplecov', require: false
