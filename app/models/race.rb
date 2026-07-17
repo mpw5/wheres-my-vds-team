@@ -49,7 +49,9 @@ class Race < ApplicationRecord
   def fetch_startlist_page
     uri = URI("#{CYCLINGFLASH_URL}/#{pcs_name}-#{Time.zone.today.year}/startlist")
     response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-      http.request(Net::HTTP::Get.new(uri))
+      request = Net::HTTP::Get.new(uri)
+      request['User-Agent'] = 'Mozilla/5.0 (compatible)'
+      http.request(request)
     end
     response.is_a?(Net::HTTPSuccess) ? response.body : nil
   end
