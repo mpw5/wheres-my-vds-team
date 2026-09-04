@@ -7,7 +7,7 @@ async function startNextServer() {
   const port = 7100 + Math.floor(Math.random() * 1000);
   const serverProcess = spawn(process.execPath, [fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url)), 'dev', '-p', String(port)], {
     cwd: new URL('..', import.meta.url),
-    env: { ...process.env, POC_DATA_DIR: `.data/test-${port}`, SCRAPER_BASE_URL: 'http://127.0.0.1:1' },
+    env: { ...process.env, POC_DATA_DIR: `.data/test-${port}`, POC_DISABLE_STARTUP_PREFETCH: 'true', SCRAPER_BASE_URL: 'http://127.0.0.1:1' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 

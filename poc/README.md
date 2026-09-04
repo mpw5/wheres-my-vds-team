@@ -14,7 +14,7 @@ npm run dev
 
 Open `http://localhost:3000/` and search by team name or directeur sportif using the `team_ds` field.
 
-The POC reads the active seed data from the parent application and creates disposable SQLite data under `.data/`. When the local Rails development database exists, the POC reads its fresh `scraped_startlist` values read-only before attempting a live refresh; it never writes to that database. Generated `.next/`, `.data/`, and `node_modules/` content is ignored. Chromium is required because Cyclingflash may return a Cloudflare challenge to plain HTTP clients; the scraper uses a headless browser fallback to load the rendered startlist.
+The POC reads the active seed data from the parent application and creates disposable SQLite data under `.data/`. It does not read or write the Rails database. Generated `.next/`, `.data/`, and `node_modules/` content is ignored. Chromium is required because Cyclingflash may return a Cloudflare challenge to plain HTTP clients; the scraper uses a headless browser fallback to load the rendered startlist.
 
 ## Validate
 

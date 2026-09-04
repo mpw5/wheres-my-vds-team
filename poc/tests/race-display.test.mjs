@@ -8,7 +8,7 @@ async function startNextServer(scraperBaseUrl) {
   const port = 5100 + Math.floor(Math.random() * 1000);
   const serverProcess = spawn(process.execPath, [fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url)), 'dev', '-p', String(port)], {
     cwd: new URL('..', import.meta.url),
-    env: { ...process.env, POC_DATA_DIR: `.data/test-${port}`, SCRAPER_BASE_URL: scraperBaseUrl ?? '' },
+    env: { ...process.env, POC_DATA_DIR: `.data/test-${port}`, POC_DISABLE_STARTUP_PREFETCH: 'true', SCRAPER_BASE_URL: scraperBaseUrl ?? '' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 

@@ -4,7 +4,7 @@
 
 **Blocked by:** 02: Seed data and team search.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] Active race CSV data seeds the disposable database.
 - [ ] Upcoming races are filtered from the current date.

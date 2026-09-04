@@ -4,7 +4,7 @@
 
 **Blocked by:** 03: Upcoming race display.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] Runtime startlist requests use live Cyclingflash responses, not fixture data.
 - [ ] Missing or stale startlists trigger a live refresh.

@@ -1,7 +1,10 @@
 import { findTeams, matchingRiders } from '../src/teams';
-import { fetchStartlist, formatDates, upcomingRaces, type Race } from '../src/races';
+import { fetchStartlist, formatDates, prefetchUpcomingStartlists, upcomingRaces, type Race } from '../src/races';
 
 const heading = "Where's my";
+if (process.env.POC_DISABLE_STARTUP_PREFETCH !== 'true' && process.env.NEXT_PHASE !== 'phase-production-build') {
+  void prefetchUpcomingStartlists();
+}
 
 type SearchParams = Promise<{ team_ds?: string }>;
 

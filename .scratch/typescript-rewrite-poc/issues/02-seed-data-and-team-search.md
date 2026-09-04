@@ -4,7 +4,7 @@
 
 **Blocked by:** 01: TypeScript POC foundation.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] Active team CSV data seeds the disposable database.
 - [ ] The `team_ds` query searches team name and directeur sportif.

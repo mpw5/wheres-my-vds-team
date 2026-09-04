@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] The POC starts locally from a clean checkout with documented commands.
 - [ ] The POC serves a basic server-rendered page at its root URL.
