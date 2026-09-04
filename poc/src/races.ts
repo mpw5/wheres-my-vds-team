@@ -1,4 +1,6 @@
 import { existsSync } from 'node:fs';
+import http from 'node:http';
+import https from 'node:https';
 import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -41,6 +43,28 @@ async function fetchWithBrowser(url: string): Promise<string[]> {
   }
 }
 
+async function fetchHtml(url: string): Promise<{ status: number; body: string }> {
+  const parsedUrl = new URL(url);
+  const client = parsedUrl.protocol === 'https:' ? https : http;
+
+  return new Promise((resolve, reject) => {
+    const request = client.get(parsedUrl, {
+      headers: {
+        Accept: '*/*',
+        Connection: 'close',
+        'User-Agent': 'Mozilla/5.0 (compatible)',
+      },
+      servername: parsedUrl.hostname,
+    }, (response) => {
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => { body += chunk; });
+      response.on('end', () => resolve({ status: response.statusCode ?? 0, body }));
+    });
+    request.on('error', reject);
+  });
+}
+
 export async function fetchStartlist(race: Race): Promise<string[]> {
   const baseUrl = process.env.SCRAPER_BASE_URL || 'https://cyclingflash.com/race';
   const url = `${baseUrl}/${race.pcsName}-${new Date().getUTCFullYear()}/startlist`;
@@ -53,9 +77,9 @@ export async function fetchStartlist(race: Race): Promise<string[]> {
   }
 
   try {
-    const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible)' } });
-    if (response.ok) {
-      const html = await response.text();
+    const response = await fetchHtml(url);
+    if (response.status >= 200 && response.status < 300) {
+      const html = response.body;
       const riders = [...html.matchAll(/<a[^>]+href=["'][^"']*\/profile\/[\w-]+["'][^>]*>([^<]+)<\/a>/gi)]
         .map((match) => match[1].trim());
       if (riders.length > 0) {
