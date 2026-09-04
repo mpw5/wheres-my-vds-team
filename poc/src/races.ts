@@ -1,5 +1,7 @@
+import { existsSync } from 'node:fs';
 import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { createDisposableDatabase } from './database.mjs';
 import { chromium, type Browser } from 'playwright';
 
@@ -9,6 +11,21 @@ const databasePath = join(process.cwd(), process.env.POC_DATA_DIR ?? '.data', 'r
 export type Race = { raceType: string; name: string; pcsName: string; startDate: Date; endDate: Date };
 
 let browser: Browser | undefined;
+const startlistCache = new Map<string, { fetchedAt: number; riders: string[] }>();
+const STARTLIST_CACHE_MS = 6 * 60 * 60 * 1000;
+
+function readRailsCache(pcsName: string): string[] {
+  const railsDatabasePath = process.env.RAILS_DATABASE_PATH ?? join(process.cwd(), '..', 'db', 'development.sqlite3');
+  if (!existsSync(railsDatabasePath)) return [];
+
+  const database = new DatabaseSync(railsDatabasePath, { readOnly: true });
+  try {
+    const row = database.prepare("SELECT scraped_startlist FROM races WHERE pcs_name = ? AND scraped_startlist IS NOT NULL AND updated_at >= datetime('now', '-6 hours') ORDER BY updated_at DESC LIMIT 1").get(pcsName) as { scraped_startlist?: string } | undefined;
+    return row?.scraped_startlist?.split(',').filter(Boolean) ?? [];
+  } finally {
+    database.close();
+  }
+}
 
 async function fetchWithBrowser(url: string): Promise<string[]> {
   browser ??= await chromium.launch({ headless: true });
@@ -27,6 +44,13 @@ async function fetchWithBrowser(url: string): Promise<string[]> {
 export async function fetchStartlist(race: Race): Promise<string[]> {
   const baseUrl = process.env.SCRAPER_BASE_URL || 'https://cyclingflash.com/race';
   const url = `${baseUrl}/${race.pcsName}-${new Date().getUTCFullYear()}/startlist`;
+  const cached = startlistCache.get(url);
+  if (cached && Date.now() - cached.fetchedAt < STARTLIST_CACHE_MS) return cached.riders;
+  const railsCached = readRailsCache(race.pcsName);
+  if (railsCached.length > 0) {
+    startlistCache.set(url, { fetchedAt: Date.now(), riders: railsCached });
+    return railsCached;
+  }
 
   try {
     const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible)' } });
@@ -34,12 +58,17 @@ export async function fetchStartlist(race: Race): Promise<string[]> {
       const html = await response.text();
       const riders = [...html.matchAll(/<a[^>]+href=["'][^"']*\/profile\/[\w-]+["'][^>]*>([^<]+)<\/a>/gi)]
         .map((match) => match[1].trim());
-      if (riders.length > 0) return riders;
+      if (riders.length > 0) {
+        startlistCache.set(url, { fetchedAt: Date.now(), riders });
+        return riders;
+      }
     } else {
       console.warn(`Cyclingflash returned ${response.status} for ${url}; trying browser scrape`);
     }
 
-    return await fetchWithBrowser(url);
+    const riders = await fetchWithBrowser(url);
+    if (riders.length > 0) startlistCache.set(url, { fetchedAt: Date.now(), riders });
+    return riders;
   } catch {
     console.warn(`Cyclingflash request failed for ${url}; trying browser scrape`);
     return [];
@@ -92,7 +121,7 @@ async function getStore() {
 
 export async function upcomingRaces(raceType: string, today = new Date()): Promise<Race[]> {
   const database = await getStore();
-  const rows = database.database.prepare('SELECT race_type AS raceType, name, pcs_name AS pcsName, start_date AS startDate, end_date AS endDate FROM races WHERE race_type = ? AND end_date >= ? ORDER BY start_date ASC LIMIT 10').all(raceType, today.toISOString()) as Array<Omit<Race, 'startDate' | 'endDate'> & { startDate: string; endDate: string }>;
+  const rows = database.database.prepare('SELECT race_type AS raceType, name, pcs_name AS pcsName, start_date AS startDate, end_date AS endDate FROM races WHERE race_type = ? AND end_date >= ? GROUP BY race_type, pcs_name ORDER BY start_date ASC LIMIT 10').all(raceType, today.toISOString()) as Array<Omit<Race, 'startDate' | 'endDate'> & { startDate: string; endDate: string }>;
   return rows.map((race) => ({ ...race, startDate: new Date(race.startDate), endDate: new Date(race.endDate) }));
 }
 

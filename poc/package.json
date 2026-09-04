@@ -1,6 +1,7 @@
 {
   "name": "wheres-my-vds-team-poc",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

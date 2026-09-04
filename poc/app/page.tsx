@@ -16,6 +16,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
     matchingRiders(team, await fetchStartlist(race)),
   ] as const)));
   const ridersByRace = Object.fromEntries(raceRiders);
+  const teamTypes = [...new Set(teams.map((team) => team.teamType))];
 
   return (
     <main>
@@ -30,12 +31,15 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           <button type="submit">Search</button>
         </form>
       </div>
-      {teams.map((team) => (
-        <div className={`results ${team.teamType}`} key={`${team.teamType}-${team.ds}-${team.name}`}>
-          <h2>{team.name} - {team.ds}</h2>
-          {races[team.teamType]?.map((race, raceIndex) => {
-            const startingRiders = ridersByRace[`${team.teamType}-${team.ds}-${team.name}-${race.pcsName}`] ?? [];
-            const raceKey = `${team.teamType}-${team.ds}-${team.name}-${race.pcsName}-${race.startDate.toISOString()}-${raceIndex}`;
+      {teamTypes.map((teamType) => (
+        <div className={`results ${teamType}`} key={teamType}>
+          {teams.filter((team) => team.teamType === teamType).map((team) => <h2 key={`${teamType}-${team.ds}-${team.name}`}>{team.name} - {team.ds}</h2>)}
+          {races[teamType]?.map((race, raceIndex) => {
+            const startingRiders = teams
+              .filter((team) => team.teamType === teamType)
+              .flatMap((team) => ridersByRace[`${team.teamType}-${team.ds}-${team.name}-${race.pcsName}`] ?? [])
+              .filter((rider, index, riders) => riders.indexOf(rider) === index);
+            const raceKey = `${teamType}-${race.pcsName}-${race.startDate.toISOString()}-${raceIndex}`;
             return (
             <div className="race" key={raceKey} data-race-key={raceKey}>
               <h3>
