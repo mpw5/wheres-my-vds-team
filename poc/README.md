@@ -8,12 +8,13 @@ From this directory:
 
 ```sh
 npm install
+npx playwright install chromium
 npm run dev
 ```
 
 Open `http://localhost:3000/` and search by team name or directeur sportif using the `team_ds` field.
 
-The POC reads the active seed data from the parent application and creates disposable SQLite data under `.data/`. Generated `.next/`, `.data/`, and `node_modules/` content is ignored.
+The POC reads the active seed data from the parent application and creates disposable SQLite data under `.data/`. Generated `.next/`, `.data/`, and `node_modules/` content is ignored. Chromium is required because Cyclingflash may return a Cloudflare challenge to plain HTTP clients; the scraper uses a headless browser fallback to load the rendered startlist.
 
 ## Validate
 

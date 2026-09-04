@@ -1,11 +1,28 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { createDisposableDatabase } from './database.mjs';
+import { chromium, type Browser } from 'playwright';
 
 const racesCsv = join(process.cwd(), '..', 'db', 'seeds', 'races.csv');
 const databasePath = join(process.cwd(), process.env.POC_DATA_DIR ?? '.data', 'races.sqlite');
 
 export type Race = { raceType: string; name: string; pcsName: string; startDate: Date; endDate: Date };
+
+let browser: Browser | undefined;
+
+async function fetchWithBrowser(url: string): Promise<string[]> {
+  browser ??= await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.locator('a[href*="/profile/"]').first().waitFor({ timeout: 10_000 }).catch(() => undefined);
+    return await page.locator('a[href*="/profile/"]').evaluateAll((links) => links
+      .map((link) => link.textContent?.trim() ?? '')
+      .filter(Boolean));
+  } finally {
+    await page.close();
+  }
+}
 
 export async function fetchStartlist(race: Race): Promise<string[]> {
   const baseUrl = process.env.SCRAPER_BASE_URL || 'https://cyclingflash.com/race';
@@ -13,11 +30,18 @@ export async function fetchStartlist(race: Race): Promise<string[]> {
 
   try {
     const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible)' } });
-    if (!response.ok) return [];
-    const html = await response.text();
-    return [...html.matchAll(/<a[^>]+href=["'][^"']*\/profile\/[\w-]+["'][^>]*>([^<]+)<\/a>/gi)]
-      .map((match) => match[1].trim());
+    if (response.ok) {
+      const html = await response.text();
+      const riders = [...html.matchAll(/<a[^>]+href=["'][^"']*\/profile\/[\w-]+["'][^>]*>([^<]+)<\/a>/gi)]
+        .map((match) => match[1].trim());
+      if (riders.length > 0) return riders;
+    } else {
+      console.warn(`Cyclingflash returned ${response.status} for ${url}; trying browser scrape`);
+    }
+
+    return await fetchWithBrowser(url);
   } catch {
+    console.warn(`Cyclingflash request failed for ${url}; trying browser scrape`);
     return [];
   }
 }
