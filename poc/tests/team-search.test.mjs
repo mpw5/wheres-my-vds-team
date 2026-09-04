@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 async function startNextServer() {
   const port = 4100 + Math.floor(Math.random() * 1000);
-  const process = spawn('npm', ['run', 'dev', '--', '-p', String(port)], {
+  const serverProcess = spawn(process.execPath, [fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url)), 'dev', '-p', String(port)], {
     cwd: new URL('..', import.meta.url),
+    env: { ...process.env, POC_DATA_DIR: `.data/test-${port}` },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
@@ -13,12 +15,12 @@ async function startNextServer() {
     const output = (chunk) => {
       if (chunk.toString().includes('Ready')) resolve();
     };
-    process.stdout.on('data', output);
-    process.stderr.on('data', output);
-    process.once('error', reject);
+    serverProcess.stdout.on('data', output);
+    serverProcess.stderr.on('data', output);
+    serverProcess.once('error', reject);
   });
 
-  return { process, port };
+  return { process: serverProcess, port };
 }
 
 async function fetchPage(url) {

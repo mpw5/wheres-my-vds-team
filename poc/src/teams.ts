@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { createDisposableDatabase } from './database.mjs';
 
 const teamsCsv = join(process.cwd(), '..', 'db', 'seeds', 'teams.csv');
-const databasePath = join(process.cwd(), '.data', 'teams.sqlite');
+const databasePath = join(process.cwd(), process.env.POC_DATA_DIR ?? '.data', 'teams.sqlite');
 
 type Team = {
   teamType: string;
@@ -55,7 +55,7 @@ async function getStore() {
 
   await mkdir(dirname(databasePath), { recursive: true });
   const database = createDisposableDatabase(databasePath);
-  database.database.exec('CREATE TABLE IF NOT EXISTS teams (team_type TEXT, ds TEXT, name TEXT, riders TEXT)');
+  database.database.exec('DROP TABLE IF EXISTS teams; CREATE TABLE teams (team_type TEXT, ds TEXT, name TEXT, riders TEXT)');
   const insert = database.database.prepare('INSERT INTO teams VALUES (?, ?, ?, ?)');
 
   for (const team of await readTeams()) {

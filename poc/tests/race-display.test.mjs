@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 async function startNextServer() {
-  const port = 3100 + Math.floor(Math.random() * 1000);
+  const port = 5100 + Math.floor(Math.random() * 1000);
   const serverProcess = spawn(process.execPath, [fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url)), 'dev', '-p', String(port)], {
     cwd: new URL('..', import.meta.url),
     env: { ...process.env, POC_DATA_DIR: `.data/test-${port}` },
@@ -33,13 +33,15 @@ async function fetchPage(url) {
   return fetch(url);
 }
 
-test('the root page shows the current application heading', async (t) => {
+test('a matching team sees its upcoming races with dates and source links', async (t) => {
   const server = await startNextServer();
   t.after(() => server.process.kill());
 
-  const response = await fetchPage(`http://127.0.0.1:${server.port}/`);
+  const response = await fetchPage(`http://127.0.0.1:${server.port}/?team_ds=Team%20Baby%20Turtles`);
   const html = await response.text();
 
   assert.equal(response.status, 200);
-  assert.match(html, /Where(?:'|&#x27;)s my[\s\S]*Podium Cafe v2/);
+  assert.match(html, /GP Industria &amp; Artigianato/);
+  assert.match(html, /06\/09\/2026/);
+  assert.match(html, /https:\/\/cyclingflash\.com\/race\/gp-industria-artigianato-2026\/startlist/);
 });
