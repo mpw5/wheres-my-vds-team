@@ -1,12 +1,30 @@
+import { findTeams } from '../src/teams';
+
 const heading = "Where's my";
 
-export default function HomePage() {
+type SearchParams = Promise<{ team_ds?: string }>;
+
+export default async function HomePage({ searchParams }: { searchParams: SearchParams }) {
+  const { team_ds: teamDs } = await searchParams;
+  const teams = await findTeams(teamDs);
+
   return (
     <main>
       <h1>
         {heading}{' '}
         <a href="https://www.reddit.com/r/PodiumCafe2/">Podium Cafe v2</a>
       </h1>
+      <form method="get">
+        <label htmlFor="team_ds">DS name or team name:</label>
+        <input id="team_ds" name="team_ds" defaultValue={teamDs} />
+        <button type="submit">Search</button>
+      </form>
+      {teams.map((team) => (
+        <div className={`results ${team.teamType}`} key={`${team.teamType}-${team.ds}-${team.name}`}>
+          <h2>{team.name} - {team.ds}</h2>
+        </div>
+      ))}
+      {teamDs?.trim() && teams.length === 0 ? <div className="no-teams"><h2>No teams found!</h2></div> : null}
     </main>
   );
 }

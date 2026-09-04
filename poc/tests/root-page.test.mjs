@@ -21,11 +21,21 @@ async function startNextServer() {
   return { process, port };
 }
 
+async function fetchPage(url) {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const response = await fetch(url);
+    if (response.status !== 404) return response;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return fetch(url);
+}
+
 test('the root page shows the current application heading', async (t) => {
   const server = await startNextServer();
   t.after(() => server.process.kill());
 
-  const response = await fetch(`http://127.0.0.1:${server.port}/`);
+  const response = await fetchPage(`http://127.0.0.1:${server.port}/`);
   const html = await response.text();
 
   assert.equal(response.status, 200);
