@@ -7,6 +7,21 @@ const databasePath = join(process.cwd(), process.env.POC_DATA_DIR ?? '.data', 'r
 
 export type Race = { raceType: string; name: string; pcsName: string; startDate: Date; endDate: Date };
 
+export async function fetchStartlist(race: Race): Promise<string[]> {
+  const baseUrl = process.env.SCRAPER_BASE_URL || 'https://cyclingflash.com/race';
+  const url = `${baseUrl}/${race.pcsName}-${new Date().getUTCFullYear()}/startlist`;
+
+  try {
+    const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible)' } });
+    if (!response.ok) return [];
+    const html = await response.text();
+    return [...html.matchAll(/<a[^>]+href=["'][^"']*\/profile\/[\w-]+["'][^>]*>([^<]+)<\/a>/gi)]
+      .map((match) => match[1].trim());
+  } catch {
+    return [];
+  }
+}
+
 function parseCsvLine(line: string): string[] {
   const values: string[] = [];
   let value = '';

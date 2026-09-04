@@ -12,6 +12,26 @@ type Team = {
   riders: string;
 };
 
+export function matchingRiders(team: Team, startlist: string[]): string[] {
+  if (!team.riders) return [];
+
+  const normalise = (name: string) => name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/'/g, '')
+    .replace(/-/g, ' ')
+    .replace(/[()]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const normalisedStartlist = startlist.map((name) => normalise(name).split(' '));
+
+  return team.riders.split(',').sort().filter((rider) => {
+    const riderWords = normalise(rider).split(' ');
+    return normalisedStartlist.some((startlistWords) => riderWords.every((word) => startlistWords.includes(word)));
+  });
+}
+
 function parseCsvLine(line: string): string[] {
   const values: string[] = [];
   let value = '';
