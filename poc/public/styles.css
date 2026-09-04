@@ -1,0 +1,68 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px clamp(16px, 5vw, 40px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.search { text-align: center; margin-bottom: 40px; }
+.search h1 { font-size: 1.4em; font-weight: 700; margin-bottom: 16px; }
+.search label { display: block; margin-bottom: 8px; font-size: 0.95em; color: #555; }
+.search input[type="text"], .search input[type="search"], .search input:not([type]) {
+  padding: 10px 14px;
+  font-size: 1em;
+  font-family: 'Nunito', sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 260px;
+  max-width: 80%;
+  outline: none;
+}
+.search input:focus { border-color: #2563eb; }
+.search button {
+  padding: 10px 20px;
+  font-size: 1em;
+  font-family: 'Nunito', sans-serif;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.search button:hover { background-color: #1d4ed8; }
+
+.results { margin-bottom: 40px; }
+.results h2 { font-size: 1.2em; border-bottom: 2px solid #ccc; padding-bottom: 6px; margin-bottom: 16px; }
+.results.male h2 { border-bottom-color: #0d9488; }
+.results.male .race h3 a { color: #0f766e; }
+.results.female h2 { border-bottom-color: #d97706; }
+.results.female .race h3 a { color: #b45309; }
+.race { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; }
+.race h3 { margin: 0 0 4px 0; font-size: 1em; font-weight: 600; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px; }
+.date { color: #595959; font-weight: 400; font-size: 0.85em; margin-left: 8px; }
+.riders-found { color: #333; font-weight: 400; font-size: 0.95em; }
+.no-riders { color: #999; font-style: italic; font-size: 0.9em; }
+.no-teams { text-align: center; color: #888; margin-top: 40px; }
+
+footer { text-align: center; padding: 20px; color: #999; font-size: 0.85em; border-top: 1px solid #e5e7eb; margin-top: 20px; }

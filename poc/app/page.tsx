@@ -23,18 +23,21 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         {heading}{' '}
         <a href="https://www.reddit.com/r/PodiumCafe2/">Podium Cafe v2</a>
       </h1>
-      <form method="get">
-        <label htmlFor="team_ds">DS name or team name:</label>
-        <input id="team_ds" name="team_ds" defaultValue={teamDs} />
-        <button type="submit">Search</button>
-      </form>
+      <div className="search">
+        <form method="get">
+          <label htmlFor="team_ds">DS name or team name:</label>
+          <input id="team_ds" name="team_ds" defaultValue={teamDs} />
+          <button type="submit">Search</button>
+        </form>
+      </div>
       {teams.map((team) => (
         <div className={`results ${team.teamType}`} key={`${team.teamType}-${team.ds}-${team.name}`}>
           <h2>{team.name} - {team.ds}</h2>
-          {races[team.teamType]?.map((race) => {
+          {races[team.teamType]?.map((race, raceIndex) => {
             const startingRiders = ridersByRace[`${team.teamType}-${team.ds}-${team.name}-${race.pcsName}`] ?? [];
+            const raceKey = `${team.teamType}-${team.ds}-${team.name}-${race.pcsName}-${race.startDate.toISOString()}-${raceIndex}`;
             return (
-            <div className="race" key={race.pcsName}>
+            <div className="race" key={raceKey} data-race-key={raceKey}>
               <h3>
                 <a href={`https://cyclingflash.com/race/${race.pcsName}-${new Date().getUTCFullYear()}/startlist`}>{race.name}</a>
                 <span className="date">{formatDates(race)}</span>
