@@ -11,7 +11,7 @@ gem 'jbuilder'
 gem 'nokogiri'
 gem 'puma', '~> 8.0'
 gem 'rails', '~> 8.1.1'
-gem 'redis', '~> 5.4'
+gem 'redis', '~> 6.0'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
 gem 'sqlite3', '~> 2.9'
