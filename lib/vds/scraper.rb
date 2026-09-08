@@ -31,7 +31,7 @@ module Vds
       response
     end
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:disable-next Metrics/AbcSize, Metrics/MethodLength
     def self.populate_teams_csv(gender:)
       after = nil
 
@@ -54,7 +54,6 @@ module Vds
         after = teams_data.page_info.end_cursor
       end
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def self.populate_races_csv(gender:)
       races = run_query(Vds::Queries::RACES, gender).data.races.nodes
@@ -69,7 +68,7 @@ module Vds
       end
     end
 
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable-next Metrics/AbcSize
     def self.populate_riders_csv(gender:)
       riders = run_query(Vds::Queries::RIDERS, gender).data.riders.nodes
 
@@ -83,6 +82,5 @@ module Vds
         end
       end
     end
-    # rubocop:enable Metrics/AbcSize
   end
 end

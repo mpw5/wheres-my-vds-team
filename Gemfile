@@ -6,6 +6,7 @@ ruby '4.0.2'
 gem 'bootsnap', require: false
 gem 'csv'
 gem 'graphql-client'
+gem 'graphql', '>= 2.6.8'
 gem 'importmap-rails'
 gem 'jbuilder'
 gem 'nokogiri'

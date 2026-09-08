@@ -14,10 +14,10 @@ require_relative 'support/chrome'
 require 'simplecov'
 
 SimpleCov.configure do
-  add_filter '_spec.rb'
-  add_filter 'spec/'
-  add_filter 'config/'
-  add_filter 'db/seeds'
+  skip '_spec.rb'
+  skip 'spec/'
+  skip 'config/'
+  skip 'db/seeds'
 end
 
 SimpleCov.start
