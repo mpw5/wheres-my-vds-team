@@ -3,9 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Vds::Scraper do
-  # rubocop:disable RSpec/VerifiedDoubles
+  # rubocop:disable-next RSpec/VerifiedDoubles
   let(:client) { double('GraphQlClient') }
-  # rubocop:enable RSpec/VerifiedDoubles
   let(:csv) { instance_double(CSV) }
 
   before do
