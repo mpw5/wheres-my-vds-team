@@ -12,7 +12,7 @@ gem 'jbuilder'
 gem 'json', '~> 2.21'
 gem 'nokogiri'
 gem 'puma', '~> 8.0'
-gem 'rails', '~> 8.1.1'
+gem 'rails', '~> 8.1.4'
 gem 'redis', '~> 6.0'
 gem 'simplecov', require: false
 gem 'sprockets-rails'
