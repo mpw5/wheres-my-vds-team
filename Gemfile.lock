@@ -365,7 +365,6 @@ DEPENDENCIES
   graphql-client
   importmap-rails
   jbuilder
-  json (~> 3.0)
   nokogiri
   pry
   puma (~> 8.0)
