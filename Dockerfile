@@ -1,5 +1,5 @@
 # Use Ruby 4.0 as base image
-FROM ruby:4.0.9-slim
+FROM ruby:4.0.10-slim
 
 # Install system dependencies
 RUN apt-get update -qq && \
